@@ -1,0 +1,18 @@
+{
+  "service": "CRM",
+  "widgets": [
+    {
+      "name": "Email Template Sender",
+      "id": "email-template-sender",
+      "url": "/apps/email-template-sender/widget.html",
+      "location": {
+        "crm.detail.button": [
+          "Leads"
+        ]
+      },
+      "scope": [
+        "ZohoCRM.modules.all"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "zoho-app",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js",
+    "build": "node scripts/build.js",
+    "new-widget": "node scripts/new-widget.js"
+  },
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "body-parser": "^1.14.2",
+    "chalk": "^1.1.3",
+    "errorhandler": "^1.4.2",
+    "express": "^4.13.3",
+    "fs-extra": "^11.2.0",
+    "i18next": "^10.0.7",
+    "minimist": "^1.2.8",
+    "morgan": "^1.6.1",
+    "portfinder": "^1.0.25",
+    "serve-index": "^1.9.0"
+  }
+}
