@@ -1225,8 +1225,9 @@
 
         const compulsoryFields = window.compulsoryFields || [];
         let html = "";
+        const sortedData = [...data].sort((a, b) => getRecordTimestamp(b) - getRecordTimestamp(a));
 
-        data.forEach(function (record) {
+        sortedData.forEach(function (record) {
           let systemHtml = "";
           let otherHtml = "";
 
@@ -1288,6 +1289,53 @@
         container.innerHTML = html;
       }
 
+
+      const parseDateCandidate = (value) => {
+        if (!value) return 0;
+        if (value instanceof Date) return value.getTime();
+        if (typeof value === "number") return value;
+        if (typeof value !== "string") return 0;
+
+        const direct = Date.parse(value);
+        if (!Number.isNaN(direct)) return direct;
+
+        const reformatted = value.replace(
+          /(\d{1,2})-(\w{3})-(\d{4})/,
+          (_, day, mon, year) => `${mon} ${day}, ${year}`
+        );
+        const fallback = Date.parse(reformatted);
+        if (!Number.isNaN(fallback)) return fallback;
+
+        return 0;
+      };
+
+      const getRecordTimestamp = (record = {}) => {
+        const candidates = [
+          record.Modified_Time,
+          record.modified_time,
+          record.modifiedTime,
+          record.Modified_Time__s,
+          record.updated_at,
+          record.updatedAt,
+          record.modified_at,
+          record.modifiedAt,
+          record.Created_Time,
+          record.created_time
+        ];
+
+        for (const candidate of candidates) {
+          const parsed = parseDateCandidate(candidate);
+          if (parsed) return parsed;
+        }
+        return 0;
+      };
+
+      const extractTemplateSeries = (name = "") => {
+        if (!name || typeof name !== "string") return Number.POSITIVE_INFINITY;
+        const match = name.trim().match(/^(\d+)\s*[-:]/);
+        if (match) return Number.parseInt(match[1], 10);
+        return Number.POSITIVE_INFINITY;
+      };
 
       const renderResponses = (responses = []) => {
         log("Rendering responses", responses);
@@ -1382,14 +1430,22 @@
           });
           const templates = resp.email_templates || [];
           log("Templates response", templates);
+
+          const filteredTemplates = templates
+            .filter((tpl) => tpl.folder && tpl.folder.name === "Email Templates")
+            .sort((a, b) => {
+              const orderA = extractTemplateSeries(a.name);
+              const orderB = extractTemplateSeries(b.name);
+              if (orderA !== orderB) return orderA - orderB;
+              return a.name.localeCompare(b.name);
+            });
+
           selectEl.innerHTML = '<option value="">Select Form Template</option>';
-          templates.forEach(tpl => {
-            if (tpl.folder.name === "Email Templates") {
-              const opt = document.createElement("option");
-              opt.value = tpl.id;
-              opt.textContent = tpl.name;
-              selectEl.appendChild(opt);
-            }
+          filteredTemplates.forEach((tpl) => {
+            const opt = document.createElement("option");
+            opt.value = tpl.id;
+            opt.textContent = tpl.name;
+            selectEl.appendChild(opt);
           });
         } catch (err) {
           console.error("Error loading templates", err);
