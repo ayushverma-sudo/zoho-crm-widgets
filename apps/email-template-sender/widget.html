@@ -38,6 +38,7 @@
         color: #475569;
       }
 
+      input[type="text"],
       select,
       button {
         width: 100%;
@@ -51,7 +52,8 @@
       }
 
       select:focus,
-      button:focus {
+      button:focus,
+      input:focus {
         outline: 2px solid transparent;
         border-color: #94a3b8;
         box-shadow: 0 0 0 1px #94a3b8;
@@ -73,6 +75,43 @@
       button:disabled {
         opacity: .4;
         cursor: not-allowed;
+      }
+
+      .button-row {
+        display: flex;
+        gap: .75rem;
+        margin-top: 1.25rem;
+      }
+
+      .button-row button {
+        flex: 1;
+        margin-top: 0;
+        width: auto;
+      }
+
+      .button--secondary {
+        background: #fff;
+        color: #0f172a;
+        border: 1px solid #cbd5f5;
+      }
+
+      .button--secondary:hover:not(:disabled) {
+        background: #f8fafc;
+      }
+
+      .optout-message {
+        margin-top: .75rem;
+        font-size: .85rem;
+        color: #b45309;
+        background: #fffbeb;
+        border: 1px solid #fcd34d;
+        border-radius: 6px;
+        padding: .5rem .65rem;
+        display: none;
+      }
+
+      .optout-message.show {
+        display: block;
       }
 
       .message {
@@ -562,7 +601,31 @@
 
         <div id="questionPreview" style="margin-top:1rem;"></div>
 
-        <button id="sendBtn" disabled>Send Form</button>
+        <div id="additionalQuestionContainer" style="margin-top: 1rem;">
+          <div style="margin-bottom: 10px;">
+            <label for="formTitleInput">Form Title</label>
+            <input type="text" id="formTitleInput"
+              placeholder="Enter form title (e.g., Employee Satisfaction Survey)">
+          </div>
+
+          <label for="additionalQuestionInput">Additional Questions (Single Line)</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="additionalQuestionInput" placeholder="Enter question text"
+              style="flex:1;">
+            <button id="addQuestionBtn" type="button" style="width:auto; margin-top:0;">Add</button>
+          </div>
+          <div id="addedQuestionsList"
+            style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
+            <!-- Added questions appear here -->
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button id="generateLinkBtn" type="button" class="button--secondary" disabled>Generate
+            Link</button>
+          <button id="sendBtn" type="button" disabled>Send Form</button>
+        </div>
+        <div id="optOutNotice" class="optout-message"></div>
         <div id="msg"></div>
         <div id="formLink"></div>
       </div>
@@ -578,10 +641,19 @@
     <script>
       let currentLeadId = null;
       let selectedQuestions = [];
+      let leadEmailOptOut = false;
       const msgEl = document.getElementById("msg");
       const selectEl = document.getElementById("templateSelect");
       const previewEl = document.getElementById("questionPreview");
+      const formTitleInput = document.getElementById("formTitleInput");
+      const additionalQuestionInput = document.getElementById("additionalQuestionInput");
+      const addQuestionBtn = document.getElementById("addQuestionBtn");
+      const addedQuestionsListEl = document.getElementById("addedQuestionsList");
       const sendBtn = document.getElementById("sendBtn");
+      const generateLinkBtn = document.getElementById("generateLinkBtn");
+      const optOutNotice = document.getElementById("optOutNotice");
+
+      let addedQuestions = [];
       const formLinkEl = document.getElementById("formLink");
       const responsesSection = document.getElementById("responsesSection");
 
@@ -604,6 +676,38 @@
           return JSON.stringify(err);
         } catch (jsonErr) {
           return "Unserializable error object";
+        }
+      };
+
+      const updateOptOutNotice = () => {
+        if (!optOutNotice) return;
+        if (leadEmailOptOut) {
+          optOutNotice.textContent = "Lead has opted out of emails. Sending is disabled.";
+          optOutNotice.classList.add("show");
+          sendBtn.title = "Lead has opted out of email communication.";
+        } else {
+          optOutNotice.textContent = "";
+          optOutNotice.classList.remove("show");
+          sendBtn.removeAttribute("title");
+        }
+      };
+
+      const loadLeadDetails = async (leadId) => {
+        if (!leadId) return;
+        log("Fetching lead details", leadId);
+        try {
+          const resp = await ZOHO.CRM.API.getRecord({
+            Entity: "Leads",
+            RecordID: leadId
+          });
+          const record = Array.isArray(resp.data) ? resp.data[0] : null;
+          leadEmailOptOut = Boolean(record && record.Email_Opt_Out);
+        } catch (err) {
+          console.error("Error fetching lead details", err);
+          leadEmailOptOut = false;
+        } finally {
+          updateOptOutNotice();
+          setButtonState();
         }
       };
 
@@ -651,10 +755,33 @@
       };
 
       const setButtonState = () => {
-        const disabled = !selectEl.value || !currentLeadId;
-        sendBtn.disabled = disabled;
-        formLinkEl.disabled = disabled;
-        log("Button state updated", { hasTemplate: Boolean(selectEl.value), currentLeadId, disabled });
+        const hasTemplate = Boolean(selectEl.value);
+        const hasQuestions = addedQuestions.length > 0;
+        const hasLead = Boolean(currentLeadId);
+
+        // Mutually exclusive usage (unchanged)
+        formTitleInput.disabled = hasTemplate;
+        additionalQuestionInput.disabled = hasTemplate;
+        addQuestionBtn.disabled = hasTemplate;
+        selectEl.disabled = hasQuestions;
+
+        if (generateLinkBtn) {
+          generateLinkBtn.disabled = !hasLead;
+        }
+        const sendDisabled = leadEmailOptOut || !hasLead;
+        sendBtn.disabled = sendDisabled;
+        formLinkEl.disabled = !canAct;
+
+        updateOptOutNotice();
+
+        log("Button state updated", {
+          hasTemplate,
+          hasQuestions,
+          hasLead,
+          sendDisabled,
+          generateDisabled: generateLinkBtn ? generateLinkBtn.disabled : null,
+          leadEmailOptOut
+        });
       };
 
       const ensureFunctionSuccess = (resp, contextLabel) => {
@@ -1216,7 +1343,7 @@
       };
 
       function renderWidget(data) {
-        console.log("comes in renderWidget", data);
+        // console.log("comes in renderWidget", data);
         const container = document.getElementById("responsesPanel");
         if (!data || data.length === 0) {
           container.innerHTML = "<p style='text-align:center;color:#777;'>No responses found.</p>";
@@ -1227,52 +1354,104 @@
         let html = "";
 
         data.forEach(function (record) {
+          // If is_master is false, skip this record? Or handle it differently?
+          // The query says: "in show responses of additinal question their is field is_master : false and then handle this type of thing also"
+          // Assuming we want to show it maybe with a different style or just ensure it renders?
+
+          // Let's add a visual indicator if it's NOT a master form (i.e. custom/additional questions form)
+          // The field might be boolean or string "false"
+          const isMaster = record.is_master === true || record.is_master === "true";
+          // If the field is missing, default to true? Or false? 
+          // Let's check if explicit false.
+          const isCustomForm = record.is_master === false || record.is_master === "false";
+
           let systemHtml = "";
           let otherHtml = "";
 
-          Object.keys(record).forEach(function (key) {
-            const val = record[key];
-            if (val === "" || (Array.isArray(val) && val.length === 0)) return;
+          // Check if this is a custom form response with Question/Answer structure
+          // The user provided example shows keys: { Questiom: "...", Answer: "..." }
+          // Note the typo "Questiom" in the user's data example.
+          if (isCustomForm && record.list && record.list.length > 0) {
+            console.log("record.list", record.list);
 
-            const label = key.replace(/_/g, " ");
-            const valuesArray = Array.isArray(val) ? val : [val];
-            const assets = valuesArray
-              .map(buildAssetDescriptor)
-              .filter(Boolean);
+            record.list.forEach((item) => {
+              console.log("item", item);
+              const q = item.Questiom || item.Question;
+              const a = item.Answer;
 
-            const isMediaField = assets.length > 0;
-            let fieldValueHtml = "";
+              otherHtml += `
+                <div class="field-box">
+                  <div class="field-label">${escapeHtml(q)}</div>
+                  <div class="field-value">${escapeHtml(coerceValueToString(a))}</div>
+                </div>
+               `;
 
-            if (isMediaField) {
-              const cards = assets.map(renderAssetCard).join("");
-              fieldValueHtml = `<div class="media-grid">${cards}</div>`;
-            } else {
-              const textValue = valuesArray
-                .map((item) => escapeHtml(coerceValueToString(item)))
-                .filter((item) => item !== "")
-                .join(", ");
-              fieldValueHtml = textValue || "—";
-            }
+            });
 
-            const fieldHtml = `
-        <div class="field-box ${compulsoryFields.includes(key) ? "system-box" : ""} ${isMediaField ? "media-field" : ""}">
-          <div class="field-label">${escapeHtml(label)}</div>
-          <div class="field-value">${fieldValueHtml}</div>
-        </div>`;
+            // We still might want to show system fields like Modified_Time
+            // Let's loop for system fields only
+            Object.keys(record).forEach(function (key) {
+              if (compulsoryFields.includes(key)) {
+                const val = record[key];
+                const label = key.replace(/_/g, " ");
+                const fieldHtml = `
+                    <div class="field-box system-box">
+                      <div class="field-label">${escapeHtml(label)}</div>
+                      <div class="field-value">${escapeHtml(coerceValueToString(val))}</div>
+                    </div>`;
+                systemHtml += fieldHtml;
+              }
+            });
 
-            if (compulsoryFields.includes(key)) {
-              systemHtml += fieldHtml;
-            } else {
-              otherHtml += fieldHtml;
-            }
-          });
+          } else {
+            // Standard rendering for normal forms or unknown structure
+            Object.keys(record).forEach(function (key) {
+              if (key === "is_master") return;
+              // ... (existing logic)
+              const val = record[key];
+              if (val === "" || (Array.isArray(val) && val.length === 0)) return;
+
+              const label = key.replace(/_/g, " ");
+              const valuesArray = Array.isArray(val) ? val : [val];
+              const assets = valuesArray
+                .map(buildAssetDescriptor)
+                .filter(Boolean);
+
+              const isMediaField = assets.length > 0;
+              let fieldValueHtml = "";
+
+              if (isMediaField) {
+                const cards = assets.map(renderAssetCard).join("");
+                fieldValueHtml = `<div class="media-grid">${cards}</div>`;
+              } else {
+                const textValue = valuesArray
+                  .map((item) => escapeHtml(coerceValueToString(item)))
+                  .filter((item) => item !== "")
+                  .join(", ");
+                fieldValueHtml = textValue || "—";
+              }
+
+              const fieldHtml = `
+            <div class="field-box ${compulsoryFields.includes(key) ? "system-box" : ""} ${isMediaField ? "media-field" : ""}">
+              <div class="field-label">${escapeHtml(label)}</div>
+              <div class="field-value">${fieldValueHtml}</div>
+            </div>`;
+
+              if (compulsoryFields.includes(key)) {
+                systemHtml += fieldHtml;
+              } else {
+                otherHtml += fieldHtml;
+              }
+            });
+          }
 
           html += `
-      <div class="response-card">
+      <div class="response-card" style="${isCustomForm ? 'border-left: 4px solid #f59e0b;' : ''}">
         <div class="accordion-header" onclick="toggleAccordion(this)">
           <div>
-            <span class="header-title">Response ID : ${record.ID || "N/A"}</span>
-            <span class="header-meta"> | Updated At : ${record.Modified_Time || ""}</span>
+            <span class="header-title">Response ID : ${record.ID || record?.list?.[0]?.form_id || "N/A"} ${isCustomForm ? '<span class="file-chip" style="background:#fef3c7; color:#d97706; margin-left:8px; font-size:0.7rem;">Custom Form</span>' : ''}</span>
+            <span class="header-meta"> | Updated At : ${record.Modified_Time || record?.list?.[0]?.Modified_Time
+            || ""}</span>
           </div>
           <div class="arrow">▼</div>
         </div>
@@ -1350,7 +1529,7 @@
           const resp = await ZOHO.CRM.FUNCTIONS.execute("getLeadFormResponses", {
             arguments: JSON.stringify({ leadId })
           });
-          console.log("getLeadFormResponses response", resp);
+          // console.log("getLeadFormResponses response", resp);
 
 
           ensureFunctionSuccess(resp, "getLeadFormResponses");
@@ -1382,6 +1561,7 @@
           });
           const templates = resp.email_templates || [];
           log("Templates response", templates);
+          console.log("templates", templates);
           selectEl.innerHTML = '<option value="">Select Form Template</option>';
           templates.forEach(tpl => {
             if (tpl.folder.name === "Email Templates") {
@@ -1437,43 +1617,139 @@
         }
       };
 
-      // Call Deluge function to send template
-      const invokeFunction = async (leadId) => {
-        log("Sending template for lead", leadId, "with template", selectEl.value);
+      const renderAddedQuestions = () => {
+        if (!addedQuestionsListEl) return;
+        addedQuestionsListEl.innerHTML = "";
+        addedQuestions.forEach((q, index) => {
+          const div = document.createElement("div");
+          div.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: #f1f5f9; padding: 6px 10px; border-radius: 4px; border: 1px solid #e2e8f0; font-size: 0.9rem;";
 
-        if (!selectEl.value) {
-          showMessage("Choose a template first.", "error");
+          const span = document.createElement("span");
+          span.textContent = q.question;
+
+          const delBtn = document.createElement("button");
+          delBtn.innerHTML = "&times;";
+          delBtn.style.cssText = "width: 24px; height: 24px; padding: 0; line-height: 1; margin: 0; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;";
+          delBtn.onclick = () => {
+            addedQuestions.splice(index, 1);
+            renderAddedQuestions();
+          };
+
+          div.appendChild(span);
+          div.appendChild(delBtn);
+          addedQuestionsListEl.appendChild(div);
+        });
+
+        // Update states whenever list changes
+        setButtonState();
+      };
+
+      addQuestionBtn.addEventListener("click", () => {
+        const val = additionalQuestionInput.value.trim();
+        if (!val) return;
+
+        addedQuestions.push({
+          question: val,
+          type: "single_line"
+        });
+
+        additionalQuestionInput.value = "";
+        renderAddedQuestions();
+      });
+
+      // Allow Enter key to add question
+      additionalQuestionInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          addQuestionBtn.click();
+        }
+      });
+
+      // Call Deluge function to send template or generate link
+      const invokeFunction = async (leadId, mode = "send") => {
+        log(`${mode === "send" ? "Sending" : "Generating"} template for lead`, leadId, {
+          template: selectEl.value,
+          hasCustomQuestions: addedQuestions.length > 0
+        });
+
+        const hasTemplate = Boolean(selectEl.value);
+        const hasQuestions = addedQuestions.length > 0;
+
+        if (!leadId) {
+          showMessage("Lead ID missing; open widget via Lead button.", "error");
           return;
         }
 
-        sendBtn.disabled = true;
-        showMessage("Sending form…", "info");
+        if (!hasTemplate && !hasQuestions) {
+          showMessage("Please select a template or add questions.", "error");
+          return;
+        }
+
+        if (mode === "send" && leadEmailOptOut) {
+          showMessage("Lead has opted out of email communication.", "error");
+          return;
+        }
+
+        const activeButton = mode === "send" ? sendBtn : generateLinkBtn;
+        if (activeButton) activeButton.disabled = true;
+        showMessage(mode === "send" ? "Sending form…" : "Generating link…", "info");
+
+        const formTitle = formTitleInput.value.trim() || "Untitled Form";
+        const formPayload = hasQuestions
+          ? {
+            title: formTitle,
+            questions: addedQuestions.map((q) => ({ question: q.question }))
+          }
+          : null;
 
         const args = {
           leadId,
           emailTemplateId: selectEl.value
         };
 
+        if (formPayload) {
+          args.formDetails = JSON.stringify(formPayload);
+        }
+
         try {
+          console.log("args", args);
+
           const resp = await ZOHO.CRM.FUNCTIONS.execute("emailsendfunction", { arguments: JSON.stringify(args) });
           ensureFunctionSuccess(resp, "emailsendfunction");
           log("emailsendfunction response", resp);
 
-          let outputObj = JSON.parse(resp.details.output);
+          const outputObj = JSON.parse(resp.details.output);
+          const formLink = outputObj.formLink;
 
-          // 2. Extract the link
-          let formLink = outputObj.formLink;
-
-          console.log("formLink", formLink);
-          showMessage("Form sent successfully to the lead.", "success");
+          showMessage(
+            mode === "send"
+              ? "Form sent successfully to the lead."
+              : "Form link generated.",
+            "success"
+          );
           addFormLink(formLink);
-          await loadLeadResponses(leadId);
+
+          if (formPayload) {
+            formTitleInput.value = "";
+            addedQuestions = [];
+            renderAddedQuestions();
+          }
+
+          if (mode === "send") {
+            await loadLeadResponses(leadId);
+          }
         } catch (err) {
           console.error("Error calling function", err);
           const readableError = describeError(err);
-          showMessage(`Failed to send form. ${escapeHtml(readableError)}`, "error");
+          showMessage(
+            `${mode === "send" ? "Failed to send form." : "Failed to generate link."} ${escapeHtml(readableError)}`,
+            "error"
+          );
         } finally {
-          sendBtn.disabled = false;
+          if (activeButton) {
+            activeButton.disabled = false;
+          }
+          setButtonState();
         }
       };
 
@@ -1483,9 +1759,20 @@
         setButtonState();
       });
 
+      if (generateLinkBtn) {
+        generateLinkBtn.addEventListener("click", async () => {
+          log("Generate link button clicked", {
+            currentLeadId,
+            templateId: selectEl.value,
+            hasQuestions: addedQuestions.length > 0
+          });
+          await invokeFunction(currentLeadId, "generate");
+        });
+      }
+
       sendBtn.addEventListener("click", async () => {
         log("Send button clicked", { currentLeadId, templateId: selectEl.value });
-        await invokeFunction(currentLeadId);
+        await invokeFunction(currentLeadId, "send");
       });
 
       // Initialize the embedded widget
@@ -1502,6 +1789,7 @@
 
         loadTemplates();
         loadLeadResponses(currentLeadId);
+        loadLeadDetails(currentLeadId);
         setButtonState();
       });
 
