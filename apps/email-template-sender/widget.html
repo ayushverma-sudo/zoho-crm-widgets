@@ -1,1014 +1,1205 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-  <meta charset="UTF-8" />
-  <title>Send Email Template Popup</title>
-  <style>
-    :root {
-      color-scheme: light;
-      font-family: "Inter", "Open Sans", sans-serif;
-      line-height: 1.4;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <title>Send Email Template Popup</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: "Inter", "Open Sans", sans-serif;
+        line-height: 1.4;
+      }
 
-    body {
-      margin: 0;
-      padding: 1.5rem;
-      background: #fafafa;
-      color: #0f172a;
-    }
+      body {
+        margin: 0;
+        padding: 1.5rem;
+        background: #fafafa;
+        color: #0f172a;
+      }
 
-    .widgetPopup {
-      margin-top: 10px;
-    }
+      .widgetPopup {
+        margin-top: 10px;
+      }
 
-    .card {
-      background: #fff;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 1.5rem;
-      max-width: 640px;
-      margin: auto;
-    }
+      .card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 1.5rem;
+        max-width: 640px;
+        margin: auto;
+      }
 
-    label {
-      display: block;
-      font-size: .9rem;
-      margin-bottom: .35rem;
-      color: #475569;
-    }
+      label {
+        display: block;
+        font-size: .9rem;
+        margin-bottom: .35rem;
+        color: #475569;
+      }
 
-    input[type="text"],
-    select,
-    button {
-      width: 100%;
-      padding: .55rem .65rem;
-      border-radius: 6px;
-      border: 1px solid #cbd5f5;
-      font-size: .95rem;
-      font-family: inherit;
-      background: #fff;
-      color: inherit;
-    }
+      input[type="text"],
+      select,
+      button {
+        width: 100%;
+        padding: .55rem .65rem;
+        border-radius: 6px;
+        border: 1px solid #cbd5f5;
+        font-size: .95rem;
+        font-family: inherit;
+        background: #fff;
+        color: inherit;
+      }
 
-    select:focus,
-    button:focus,
-    input:focus {
-      outline: 2px solid transparent;
-      border-color: #94a3b8;
-      box-shadow: 0 0 0 1px #94a3b8;
-    }
+      select:focus,
+      button:focus,
+      input:focus {
+        outline: 2px solid transparent;
+        border-color: #94a3b8;
+        box-shadow: 0 0 0 1px #94a3b8;
+      }
 
-    button {
-      background: #0f172a;
-      color: #fff;
-      border: none;
-      margin-top: 1rem;
-      cursor: pointer;
-      transition: opacity .15s ease;
-    }
+      button {
+        background: #0f172a;
+        color: #fff;
+        border: none;
+        margin-top: 1rem;
+        cursor: pointer;
+        transition: opacity .15s ease;
+      }
 
-    button:hover:not(:disabled) {
-      opacity: .85;
-    }
+      button:hover:not(:disabled) {
+        opacity: .85;
+      }
 
-    button:disabled {
-      opacity: .4;
-      cursor: not-allowed;
-    }
+      button:disabled {
+        opacity: .4;
+        cursor: not-allowed;
+      }
 
-    .message {
-      padding: .65rem .85rem;
-      border-radius: 6px;
-      margin-bottom: 1rem;
-      margin-top: 1rem;
-      font-size: .9rem;
-    }
+      .button-row {
+        display: flex;
+        gap: .75rem;
+        margin-top: 1.25rem;
+      }
 
-    .message.success {
-      background: #ecfdf5;
-      color: #065f46;
-      border: 1px solid #bbf7d0;
-    }
+      .button-row button {
+        flex: 1;
+        margin-top: 0;
+        width: auto;
+      }
 
-    .message.error {
-      background: #fef2f2;
-      color: #b91c1c;
-      border: 1px solid #fecaca;
-    }
+      .button--secondary {
+        background: #fff;
+        color: #0f172a;
+        border: 1px solid #cbd5f5;
+      }
 
-    .message.info {
-      background: #eff6ff;
-      color: #1d4ed8;
-      border: 1px solid #bfdbfe;
-    }
+      .button--secondary:hover:not(:disabled) {
+        background: #f8fafc;
+      }
 
-    .placeholder {
-      font-size: .9rem;
-      color: #94a3b8;
-    }
+      .optout-message {
+        margin-top: .75rem;
+        font-size: .85rem;
+        color: #b45309;
+        background: #fffbeb;
+        border: 1px solid #fcd34d;
+        border-radius: 6px;
+        padding: .5rem .65rem;
+        display: none;
+      }
 
-    .panel {
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      margin-bottom: 1.25rem;
-    }
+      .optout-message.show {
+        display: block;
+      }
 
-    .panel:last-child {
-      margin-bottom: 0;
-    }
+      .message {
+        padding: .65rem .85rem;
+        border-radius: 6px;
+        margin-bottom: 1rem;
+        margin-top: 1rem;
+        font-size: .9rem;
+      }
 
-    .panel h2 {
-      margin: 0 0 .75rem;
-      font-size: 1rem;
-      font-weight: 600;
-      color: #0f172a;
-    }
+      .message.success {
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #bbf7d0;
+      }
 
-    .responses-section {
-      overflow-x: auto;
-    }
+      .message.error {
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+      }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: .6rem;
-    }
+      .message.info {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #bfdbfe;
+      }
 
-    th,
-    td {
-      text-align: left;
-      padding: .6rem .4rem;
-      border-bottom: 1px solid #e2e8f0;
-    }
+      .placeholder {
+        font-size: .9rem;
+        color: #94a3b8;
+      }
+
+      .panel {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .panel:last-child {
+        margin-bottom: 0;
+      }
+
+      .panel h2 {
+        margin: 0 0 .75rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #0f172a;
+      }
+
+      .responses-section {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .6rem;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: .6rem .4rem;
+        border-bottom: 1px solid #e2e8f0;
+      }
 
 
-    th {
-      font-weight: 600;
-      color: #475569;
-      font-size: .50rem;
-      text-transform: uppercase;
-      letter-spacing: .03em;
-    }
+      th {
+        font-weight: 600;
+        color: #475569;
+        font-size: .50rem;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+      }
 
-    tbody tr:hover {
-      background: #f8fafc;
-    }
+      tbody tr:hover {
+        background: #f8fafc;
+      }
 
-    .responses-section .message {
-      margin: 0;
-    }
+      .responses-section .message {
+        margin: 0;
+      }
 
-    .link {
-      color: #2563eb;
-      text-decoration: none;
-      font-weight: 500;
-    }
+      .link {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 500;
+      }
 
-    .link:hover {
-      text-decoration: underline;
-    }
+      .link:hover {
+        text-decoration: underline;
+      }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f4f9;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+      }
 
-    /* Card Container */
-    .response-card {
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-      margin-bottom: 20px;
-      overflow: hidden;
-      border: 1px solid #e0e0e0;
-    }
+      /* Card Container */
+      .response-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+        overflow: hidden;
+        border: 1px solid #e0e0e0;
+      }
 
-    /* Accordion Header */
-    .accordion-header {
-      background-color: #fff;
-      padding: 18px 25px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: background 0.2s;
-      border-bottom: 1px solid transparent;
-    }
+      /* Accordion Header */
+      .accordion-header {
+        background-color: #fff;
+        padding: 18px 25px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background 0.2s;
+        border-bottom: 1px solid transparent;
+      }
 
-    .accordion-header:hover {
-      background-color: #f9f9f9;
-    }
+      .accordion-header:hover {
+        background-color: #f9f9f9;
+      }
 
-    .accordion-header.active {
-      background-color: #f0f8ff;
-      border-bottom: 1px solid #e0e0e0;
-    }
+      .accordion-header.active {
+        background-color: #f0f8ff;
+        border-bottom: 1px solid #e0e0e0;
+      }
 
-    .header-title {
-      font-weight: 600;
-      font-size: 14px;
-      color: #2c3e50;
-    }
+      .header-title {
+        font-weight: 600;
+        font-size: 14px;
+        color: #2c3e50;
+      }
 
-    .header-meta {
-      font-size: 14px;
-      color: #7f8c8d;
-      margin-left: 15px;
-    }
+      .header-meta {
+        font-size: 14px;
+        color: #7f8c8d;
+        margin-left: 15px;
+      }
 
-    .arrow {
-      transition: transform 0.3s ease;
-      font-size: 14px;
-      color: #555;
-    }
+      .arrow {
+        transition: transform 0.3s ease;
+        font-size: 14px;
+        color: #555;
+      }
 
-    .accordion-header.active .arrow {
-      transform: rotate(180deg);
-    }
+      .accordion-header.active .arrow {
+        transform: rotate(180deg);
+      }
 
-    /* Accordion Content */
-    .accordion-content {
-      display: none;
-      padding: 25px;
-      background-color: white;
-    }
+      /* Accordion Content */
+      .accordion-content {
+        display: none;
+        padding: 25px;
+        background-color: white;
+      }
 
-    .accordion-content.show {
-      display: block;
-    }
+      .accordion-content.show {
+        display: block;
+      }
 
-    /* Sections */
-    .section-title {
-      font-size: 14px;
-      text-transform: uppercase;
-      font-weight: 800;
-      color: #95a5a6;
-      margin-bottom: 15px;
-      letter-spacing: 1px;
-      border-bottom: 2px solid #eee;
-      padding-bottom: 8px;
-    }
+      /* Sections */
+      .section-title {
+        font-size: 14px;
+        text-transform: uppercase;
+        font-weight: 800;
+        color: #95a5a6;
+        margin-bottom: 15px;
+        letter-spacing: 1px;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 8px;
+      }
 
-    .system-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-
-    @media (max-width: 600px) {
       .system-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      @media (max-width: 600px) {
+        .system-container {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .field-image {
+        max-width: 200px;
+        max-height: 200px;
+        object-fit: contain;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        margin-top: 6px;
+      }
+
+
+      /* Layout - SINGLE COLUMN NOW */
+      .grid-container {
+        display: grid;
         grid-template-columns: 1fr;
+        /* Single column */
+        gap: 20px;
+        /* Spacing between rows */
+        margin-bottom: 25px;
       }
-    }
 
-    .field-image {
-      max-width: 200px;
-      max-height: 200px;
-      object-fit: contain;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-      margin-top: 6px;
-    }
+      /* Field Styling - BIGGER FONTS */
+      .field-box {
+        padding: 10px;
+        border-radius: 6px;
+        border-bottom: 1px dashed #f0f0f0;
+      }
 
+      .field-label {
+        font-size: 14px;
+        /* Increased from 11px */
+        color: #666;
+        margin-bottom: 6px;
+        text-transform: capitalize;
+        font-weight: 600;
+      }
 
-    /* Layout - SINGLE COLUMN NOW */
-    .grid-container {
-      display: grid;
-      grid-template-columns: 1fr;
-      /* Single column */
-      gap: 20px;
-      /* Spacing between rows */
-      margin-bottom: 25px;
-    }
+      .field-value {
+        font-size: 16px;
+        /* Increased from 14px */
+        color: #2c3e50;
+        font-weight: 500;
+        line-height: 1.5;
+        word-break: break-word;
+      }
 
-    /* Field Styling - BIGGER FONTS */
-    .field-box {
-      padding: 10px;
-      border-radius: 6px;
-      border-bottom: 1px dashed #f0f0f0;
-    }
+      .media-download {
+        display: inline-block;
+        text-decoration: none;
+      }
 
-    .field-label {
-      font-size: 14px;
-      /* Increased from 11px */
-      color: #666;
-      margin-bottom: 6px;
-      text-transform: capitalize;
-      font-weight: 600;
-    }
+      .media-download img {
+        pointer-events: none;
+        /* ensures the click hits the <a> */
+      }
 
-    .field-value {
-      font-size: 16px;
-      /* Increased from 14px */
-      color: #2c3e50;
-      font-weight: 500;
-      line-height: 1.5;
-      word-break: break-word;
-    }
+      .media-field {
+        display: flex;
+        flex-direction: column;
+      }
 
-    .media-download {
-      display: inline-block;
-      text-decoration: none;
-    }
+      .media-field .field-label {
+        order: 1;
+        text-align: left;
+        margin-bottom: .65rem;
+        margin-top: 0;
+        font-size: .85rem;
+        letter-spacing: .01em;
+      }
 
-    .media-download img {
-      pointer-events: none;
-      /* ensures the click hits the <a> */
-    }
+      .media-field .field-value {
+        order: 2;
+      }
 
-    .media-field {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .media-field .field-label {
-      order: 1;
-      text-align: left;
-      margin-bottom: .65rem;
-      margin-top: 0;
-      font-size: .85rem;
-      letter-spacing: .01em;
-    }
-
-    .media-field .field-value {
-      order: 2;
-    }
-
-    .media-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 12px;
-    }
-
-    @media (min-width: 768px) {
       .media-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-      }
-    }
-
-    .media-card {
-      position: relative;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      background: #fff;
-      padding: 6px;
-      min-height: 88px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-decoration: none;
-      color: inherit;
-      gap: 6px;
-      overflow: hidden;
-      transition: border-color .15s ease, box-shadow .15s ease;
-    }
-
-    .media-card__action {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      width: 30px;
-      height: 30px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, .92);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      text-decoration: none;
-      transition: transform .15s ease, opacity .15s ease;
-      opacity: .9;
-      z-index: 3;
-    }
-
-    .media-card__action svg {
-      width: 14px;
-      height: 14px;
-    }
-
-    .media-card__action:hover {
-      transform: scale(1.05);
-      opacity: 1;
-    }
-
-    .asset-icon {
-      width: 54px;
-      height: 54px;
-      border-radius: 14px;
-      background: #f1f5f9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #0f172a;
-      margin-bottom: 12px;
-    }
-
-    .asset-icon svg {
-      width: 28px;
-      height: 28px;
-    }
-
-    .asset-type {
-      font-size: .75rem;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      color: #475569;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .media-card:hover {
-      border-color: #cbd5f5;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
-    }
-
-    .media-card--image,
-    .media-card--video {
-      padding: 0;
-    }
-
-    .media-card--image img,
-    .media-card--video video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      min-height: 88px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .media-card--video video {
-      background: #0f172a;
-    }
-
-    .media-chip {
-      margin-top: 8px;
-      font-size: .75rem;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      color: #475569;
-      font-weight: 600;
-    }
-
-    .media-card--file {
-      background: #f8fafc;
-      padding: 14px 14px 16px;
-      text-align: center;
-    }
-
-    .media-card.loading .asset-icon,
-    .media-card.loading .asset-type,
-    .media-card.loading .file-name,
-    .media-card.loading .media-chip,
-    .media-card.loading img,
-    .media-card.loading video {
-      opacity: 0;
-    }
-
-    .media-card__spinner {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(248, 250, 252, .9);
-      z-index: 2;
-    }
-
-    .media-card__spinner::after {
-      content: "";
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      border: 3px solid #cbd5f5;
-      border-top-color: #0f172a;
-      animation: spin 0.9s linear infinite;
-    }
-
-    .media-card--error::before {
-      content: "Preview unavailable";
-      font-size: .75rem;
-      color: #ef4444;
-      position: absolute;
-      inset: auto 8px 8px;
-      z-index: 3;
-    }
-
-    @keyframes spin {
-      from {
-        transform: rotate(0deg);
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px;
       }
 
-      to {
-        transform: rotate(360deg);
+      @media (min-width: 768px) {
+        .media-grid {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
       }
-    }
 
-    .media-card--file .file-name {
-      font-size: .85rem;
-      color: #1f2937;
-      word-break: break-word;
-    }
+      .media-card {
+        position: relative;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        background: #fff;
+        padding: 6px;
+        min-height: 88px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+        color: inherit;
+        gap: 6px;
+        overflow: hidden;
+        transition: border-color .15s ease, box-shadow .15s ease;
+      }
 
-    .file-chip {
-      background: #eef2ff;
-      color: #4338ca;
-      border-radius: 999px;
-      padding: 4px 12px;
-      font-size: .75rem;
-      font-weight: 600;
-    }
+      .media-card__action {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 30px;
+        height: 30px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, .92);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        text-decoration: none;
+        transition: transform .15s ease, opacity .15s ease;
+        opacity: .9;
+        z-index: 3;
+      }
 
-    .file-name {
-      font-size: .8rem;
-      text-align: center;
-      word-break: break-word;
-      color: #1f2937;
-      padding: 0 6px;
-    }
+      .media-card__action svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .media-card__action:hover {
+        transform: scale(1.05);
+        opacity: 1;
+      }
+
+      .asset-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 14px;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0f172a;
+        margin-bottom: 12px;
+      }
+
+      .asset-icon svg {
+        width: 28px;
+        height: 28px;
+      }
+
+      .asset-type {
+        font-size: .75rem;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #475569;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+
+      .media-card:hover {
+        border-color: #cbd5f5;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+      }
+
+      .media-card--image,
+      .media-card--video {
+        padding: 0;
+      }
+
+      .media-card--image img,
+      .media-card--video video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        min-height: 88px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .media-card--video video {
+        background: #0f172a;
+      }
+
+      .media-chip {
+        margin-top: 8px;
+        font-size: .75rem;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        color: #475569;
+        font-weight: 600;
+      }
+
+      .media-card--file {
+        background: #f8fafc;
+        padding: 14px 14px 16px;
+        text-align: center;
+      }
+
+      .media-card.loading .asset-icon,
+      .media-card.loading .asset-type,
+      .media-card.loading .file-name,
+      .media-card.loading .media-chip,
+      .media-card.loading img,
+      .media-card.loading video {
+        opacity: 0;
+      }
+
+      .media-card__spinner {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(248, 250, 252, .9);
+        z-index: 2;
+      }
+
+      .media-card__spinner::after {
+        content: "";
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        border: 3px solid #cbd5f5;
+        border-top-color: #0f172a;
+        animation: spin 0.9s linear infinite;
+      }
+
+      .media-card--error::before {
+        content: "Preview unavailable";
+        font-size: .75rem;
+        color: #ef4444;
+        position: absolute;
+        inset: auto 8px 8px;
+        z-index: 3;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .media-card--file .file-name {
+        font-size: .85rem;
+        color: #1f2937;
+        word-break: break-word;
+      }
+
+      .file-chip {
+        background: #eef2ff;
+        color: #4338ca;
+        border-radius: 999px;
+        padding: 4px 12px;
+        font-size: .75rem;
+        font-weight: 600;
+      }
+
+      .file-name {
+        font-size: .8rem;
+        text-align: center;
+        word-break: break-word;
+        color: #1f2937;
+        padding: 0 6px;
+      }
 
 
-    /* Compulsory Field Special Style */
-    .system-box {
-      background-color: #eef7fe;
-      border-left: 4px solid #3498db;
-      padding: 15px;
-      border-bottom: none;
-    }
+      /* Compulsory Field Special Style */
+      .system-box {
+        background-color: #eef7fe;
+        border-left: 4px solid #3498db;
+        padding: 15px;
+        border-bottom: none;
+      }
 
-    .system-box .field-label {
-      color: #2980b9;
-      font-weight: 700;
-    }
-  </style>
-  <!-- <script src="https://live.zwidgets.com/js-sdk/1.2/ZohoEmbededAppSDK.min.js"></script> -->
-  <script src="https://live.zwidgets.com/js-sdk/1.4/ZohoEmbededAppSDK.min.js"></script>
-</head>
+      .system-box .field-label {
+        color: #2980b9;
+        font-weight: 700;
+      }
+    </style>
+    <!-- <script src="https://live.zwidgets.com/js-sdk/1.2/ZohoEmbededAppSDK.min.js"></script> -->
+    <script src="https://live.zwidgets.com/js-sdk/1.4/ZohoEmbededAppSDK.min.js"></script>
+  </head>
 
-<body>
-  <div class="card">
-    <div class="panel" id="formPanel">
-      <h2>Select Form to Send</h2>
+  <body>
+    <div class="card">
+      <div class="panel" id="formPanel">
+        <h2>Select Form to Send</h2>
 
-      <select id="templateSelect">
-        <option value="">Select Form Template</option>
-      </select>
+        <select id="templateSelect">
+          <option value="">Select Form Template</option>
+        </select>
 
-      <div id="questionPreview" style="margin-top:1rem;"></div>
+        <div id="questionPreview" style="margin-top:1rem;"></div>
 
-      <div id="additionalQuestionContainer" style="margin-top: 1rem;">
-        <div style="margin-bottom: 10px;">
-          <label for="formTitleInput">Form Title</label>
-          <input type="text" id="formTitleInput" placeholder="Enter form title (e.g., Employee Satisfaction Survey)">
+        <div id="additionalQuestionContainer" style="margin-top: 1rem;">
+          <div style="margin-bottom: 10px;">
+            <label for="formTitleInput">Form Title</label>
+            <input type="text" id="formTitleInput"
+              placeholder="Enter form title (e.g., Employee Satisfaction Survey)">
+          </div>
+
+          <label for="additionalQuestionInput">Additional Questions (Single Line)</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="additionalQuestionInput" placeholder="Enter question text"
+              style="flex:1;">
+            <button id="addQuestionBtn" type="button" style="width:auto; margin-top:0;">Add</button>
+          </div>
+          <div id="addedQuestionsList"
+            style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
+            <!-- Added questions appear here -->
+          </div>
         </div>
 
-        <label for="additionalQuestionInput">Additional Questions (Single Line)</label>
-        <div style="display: flex; gap: 8px;">
-          <input type="text" id="additionalQuestionInput" placeholder="Enter question text" style="flex:1;">
-          <button id="addQuestionBtn" type="button" style="width:auto; margin-top:0;">Add</button>
+        <div class="button-row">
+          <button id="generateLinkBtn" type="button" class="button--secondary" disabled>Generate
+            Link</button>
+          <button id="sendBtn" type="button" disabled>Send Form</button>
         </div>
-        <div id="addedQuestionsList" style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
-          <!-- Added questions appear here -->
-        </div>
+        <div id="optOutNotice" class="optout-message"></div>
+        <div id="msg"></div>
+        <div id="formLink"></div>
       </div>
 
-      <button id="sendBtn" disabled>Send Form</button>
-      <div id="msg"></div>
-      <div id="formLink"></div>
-    </div>
-
-    <div class="panel" id="responsesPanel">
-      <h2>Lead Responses</h2>
-      <div id="responsesSection" class="responses-section placeholder">
-        Select a lead to load responses.
+      <div class="panel" id="responsesPanel">
+        <h2>Lead Responses</h2>
+        <div id="responsesSection" class="responses-section placeholder">
+          Select a lead to load responses.
+        </div>
       </div>
     </div>
-  </div>
 
-  <script>
-    let currentLeadId = null;
-    let selectedQuestions = [];
-    const msgEl = document.getElementById("msg");
-    const selectEl = document.getElementById("templateSelect");
-    const previewEl = document.getElementById("questionPreview");
-    const formTitleInput = document.getElementById("formTitleInput");
-    const additionalQuestionInput = document.getElementById("additionalQuestionInput");
-    const addQuestionBtn = document.getElementById("addQuestionBtn");
-    const addedQuestionsListEl = document.getElementById("addedQuestionsList");
-    const sendBtn = document.getElementById("sendBtn");
+    <script>
+      let currentLeadId = null;
+      let selectedQuestions = [];
+      let leadEmailOptOut = false;
+      const msgEl = document.getElementById("msg");
+      const selectEl = document.getElementById("templateSelect");
+      const previewEl = document.getElementById("questionPreview");
+      const formTitleInput = document.getElementById("formTitleInput");
+      const additionalQuestionInput = document.getElementById("additionalQuestionInput");
+      const addQuestionBtn = document.getElementById("addQuestionBtn");
+      const addedQuestionsListEl = document.getElementById("addedQuestionsList");
+      const sendBtn = document.getElementById("sendBtn");
+      const generateLinkBtn = document.getElementById("generateLinkBtn");
+      const optOutNotice = document.getElementById("optOutNotice");
 
-    let addedQuestions = [];
-    const formLinkEl = document.getElementById("formLink");
-    const responsesSection = document.getElementById("responsesSection");
+      let addedQuestions = [];
+      const formLinkEl = document.getElementById("formLink");
+      const responsesSection = document.getElementById("responsesSection");
 
-    const log = (...args) => console.log("[LeadFormWidget]", ...args);
+      const log = (...args) => console.log("[LeadFormWidget]", ...args);
 
-    const escapeHtml = (value = "") => value
-      .toString()
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+      const escapeHtml = (value = "") => value
+        .toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
-    const describeError = (err) => {
-      if (!err) return "Unknown error";
-      if (typeof err === "string") return err;
-      if (err.message) return err.message;
-      if (err.status && err.statusText) return `${err.status} ${err.statusText}`;
-      try {
-        return JSON.stringify(err);
-      } catch (jsonErr) {
-        return "Unserializable error object";
-      }
-    };
+      const describeError = (err) => {
+        if (!err) return "Unknown error";
+        if (typeof err === "string") return err;
+        if (err.message) return err.message;
+        if (err.status && err.statusText) return `${err.status} ${err.statusText}`;
+        try {
+          return JSON.stringify(err);
+        } catch (jsonErr) {
+          return "Unserializable error object";
+        }
+      };
 
-    const resolveLeadId = (pageData) => {
-      if (!pageData) return null;
-      if (Array.isArray(pageData.EntityId) && pageData.EntityId.length) {
-        log("resolveLeadId: found EntityId array", pageData.EntityId);
-        return pageData.EntityId[0];
-      }
-      if (pageData.EntityId) {
-        log("resolveLeadId: found EntityId", pageData.EntityId);
-        return pageData.EntityId;
-      }
-      if (Array.isArray(pageData.SelectedRecordIds) && pageData.SelectedRecordIds.length) {
-        log("resolveLeadId: found SelectedRecordIds", pageData.SelectedRecordIds);
-        return pageData.SelectedRecordIds[0];
-      }
-      if (Array.isArray(pageData.SelectedRecordId) && pageData.SelectedRecordId.length) {
-        log("resolveLeadId: found SelectedRecordId", pageData.SelectedRecordId);
-        return pageData.SelectedRecordId[0];
-      }
-      if (Array.isArray(pageData.RecordId) && pageData.RecordId.length) {
-        log("resolveLeadId: found RecordId array", pageData.RecordId);
-        return pageData.RecordId[0];
-      }
-      if (pageData.recordId) {
-        log("resolveLeadId: found recordId", pageData.recordId);
-        return pageData.recordId;
-      }
-      if (pageData.Entity && typeof pageData.Entity === "object" && pageData.Entity.Id) {
-        log("resolveLeadId: found Entity.Id", pageData.Entity.Id);
-        return pageData.Entity.Id;
-      }
-      log("resolveLeadId: no ID found in payload");
-      return null;
-    };
+      const updateOptOutNotice = () => {
+        if (!optOutNotice) return;
+        if (leadEmailOptOut) {
+          optOutNotice.textContent = "Lead has opted out of emails. Sending is disabled.";
+          optOutNotice.classList.add("show");
+          sendBtn.title = "Lead has opted out of email communication.";
+        } else {
+          optOutNotice.textContent = "";
+          optOutNotice.classList.remove("show");
+          sendBtn.removeAttribute("title");
+        }
+      };
 
-    const showMessage = (text, type) => {
-      msgEl.innerHTML = `
+      const loadLeadDetails = async (leadId) => {
+        if (!leadId) return;
+        log("Fetching lead details", leadId);
+        try {
+          const resp = await ZOHO.CRM.API.getRecord({
+            Entity: "Leads",
+            RecordID: leadId
+          });
+          const record = Array.isArray(resp.data) ? resp.data[0] : null;
+          leadEmailOptOut = Boolean(record && record.Email_Opt_Out);
+        } catch (err) {
+          console.error("Error fetching lead details", err);
+          leadEmailOptOut = false;
+        } finally {
+          updateOptOutNotice();
+          setButtonState();
+        }
+      };
+
+      const resolveLeadId = (pageData) => {
+        if (!pageData) return null;
+        if (Array.isArray(pageData.EntityId) && pageData.EntityId.length) {
+          log("resolveLeadId: found EntityId array", pageData.EntityId);
+          return pageData.EntityId[0];
+        }
+        if (pageData.EntityId) {
+          log("resolveLeadId: found EntityId", pageData.EntityId);
+          return pageData.EntityId;
+        }
+        if (Array.isArray(pageData.SelectedRecordIds) && pageData.SelectedRecordIds.length) {
+          log("resolveLeadId: found SelectedRecordIds", pageData.SelectedRecordIds);
+          return pageData.SelectedRecordIds[0];
+        }
+        if (Array.isArray(pageData.SelectedRecordId) && pageData.SelectedRecordId.length) {
+          log("resolveLeadId: found SelectedRecordId", pageData.SelectedRecordId);
+          return pageData.SelectedRecordId[0];
+        }
+        if (Array.isArray(pageData.RecordId) && pageData.RecordId.length) {
+          log("resolveLeadId: found RecordId array", pageData.RecordId);
+          return pageData.RecordId[0];
+        }
+        if (pageData.recordId) {
+          log("resolveLeadId: found recordId", pageData.recordId);
+          return pageData.recordId;
+        }
+        if (pageData.Entity && typeof pageData.Entity === "object" && pageData.Entity.Id) {
+          log("resolveLeadId: found Entity.Id", pageData.Entity.Id);
+          return pageData.Entity.Id;
+        }
+        log("resolveLeadId: no ID found in payload");
+        return null;
+      };
+
+      const showMessage = (text, type) => {
+        msgEl.innerHTML = `
         <div id="innerMsgBox" class="message ${type}" style="display:flex; align-items:center; justify-content:center; gap:10px;">
             <span>${text}</span>
             <!-- Link will be injected here -->
         </div>
     `;
-    };
+      };
 
-    const setButtonState = () => {
-      const hasTemplate = Boolean(selectEl.value);
-      const hasQuestions = addedQuestions.length > 0;
+      const setButtonState = () => {
+        const hasTemplate = Boolean(selectEl.value);
+        const hasQuestions = addedQuestions.length > 0;
+        const hasLead = Boolean(currentLeadId);
 
-      // Mutually exclusive usage:
-      // If template selected, disable adding questions
-      formTitleInput.disabled = hasTemplate;
-      additionalQuestionInput.disabled = hasTemplate;
-      addQuestionBtn.disabled = hasTemplate;
+        // Mutually exclusive usage (unchanged)
+        formTitleInput.disabled = hasTemplate;
+        additionalQuestionInput.disabled = hasTemplate;
+        addQuestionBtn.disabled = hasTemplate;
+        selectEl.disabled = hasQuestions;
 
-      // If questions added, disable template selection
-      selectEl.disabled = hasQuestions;
+        if (generateLinkBtn) {
+          generateLinkBtn.disabled = !hasLead;
+        }
+        const sendDisabled = leadEmailOptOut || !hasLead;
+        sendBtn.disabled = sendDisabled;
+        formLinkEl.disabled = !canAct;
 
-      // Send button logic: Enable if (Has Template OR Has Questions) AND Lead ID exists
-      const canSend = (hasTemplate || hasQuestions) && Boolean(currentLeadId);
+        updateOptOutNotice();
 
-      sendBtn.disabled = !canSend;
-      formLinkEl.disabled = !canSend;
+        log("Button state updated", {
+          hasTemplate,
+          hasQuestions,
+          hasLead,
+          sendDisabled,
+          generateDisabled: generateLinkBtn ? generateLinkBtn.disabled : null,
+          leadEmailOptOut
+        });
+      };
 
-      log("Button state updated", { hasTemplate, hasQuestions, canSend, currentLeadId });
-    };
-
-    const ensureFunctionSuccess = (resp, contextLabel) => {
-      if (!resp) {
-        throw new Error(`${contextLabel || "Function"} returned empty response`);
-      }
-      if (resp.code && resp.code !== "success") {
-        const extra = resp.details ? ` (${JSON.stringify(resp.details)})` : "";
-        throw new Error(`${contextLabel || "Function"} failed: ${resp.message || resp.code}${extra}`);
-      }
-      return resp;
-    };
+      const ensureFunctionSuccess = (resp, contextLabel) => {
+        if (!resp) {
+          throw new Error(`${contextLabel || "Function"} returned empty response`);
+        }
+        if (resp.code && resp.code !== "success") {
+          const extra = resp.details ? ` (${JSON.stringify(resp.details)})` : "";
+          throw new Error(`${contextLabel || "Function"} failed: ${resp.message || resp.code}${extra}`);
+        }
+        return resp;
+      };
 
 
-    // 
-    function addFormLink(url) {
-      var innerBox = document.getElementById("innerMsgBox");
+      // 
+      function addFormLink(url) {
+        var innerBox = document.getElementById("innerMsgBox");
 
-      if (innerBox) {
-        innerBox.innerHTML += `
+        if (innerBox) {
+          innerBox.innerHTML += `
             <a href="${url}" target="_blank" style="color: #2563eb; text-decoration: underline; font-weight: 600;">FormLink</a>
         `;
-      } else {
-        // Fallback if showMessage wasn't called first
-        var container = document.getElementById("msg");
-        if (container) container.innerHTML += `<a href="${url}">FormLink</a>`;
-      }
-    }
-
-    // Call it with your dynamic URL
-    const extractFunctionPayload = (resp) => {
-      if (!resp) return {};
-      log("Function raw response", resp);
-      if (resp.details && resp.details.output !== undefined) {
-        const { output } = resp.details;
-        if (typeof output === "string") {
-          try {
-            return JSON.parse(output);
-          } catch (parseErr) {
-            log("Unable to parse function output JSON, returning raw string");
-            return { raw: output };
-          }
+        } else {
+          // Fallback if showMessage wasn't called first
+          var container = document.getElementById("msg");
+          if (container) container.innerHTML += `<a href="${url}">FormLink</a>`;
         }
-        return output;
       }
-      if (resp.details) {
-        return resp.details;
-      }
-      return resp;
-    };
 
-    const formatDateTime = (value) => {
-      if (!value) return "—";
-      const parsed = new Date(value);
-      if (Number.isNaN(parsed.getTime())) {
-        return value;
-      }
-      return parsed.toLocaleString();
-    };
+      // Call it with your dynamic URL
+      const extractFunctionPayload = (resp) => {
+        if (!resp) return {};
+        log("Function raw response", resp);
+        if (resp.details && resp.details.output !== undefined) {
+          const { output } = resp.details;
+          if (typeof output === "string") {
+            try {
+              return JSON.parse(output);
+            } catch (parseErr) {
+              log("Unable to parse function output JSON, returning raw string");
+              return { raw: output };
+            }
+          }
+          return output;
+        }
+        if (resp.details) {
+          return resp.details;
+        }
+        return resp;
+      };
 
-    var compulsoryFields = ["ID", "lead_id", "Modified_User", "Modified_Time"];
+      const formatDateTime = (value) => {
+        if (!value) return "—";
+        const parsed = new Date(value);
+        if (Number.isNaN(parsed.getTime())) {
+          return value;
+        }
+        return parsed.toLocaleString();
+      };
 
-    // function renderWidget(data) {
-    //   console.log("comes in renderWidget", data);
+      var compulsoryFields = ["ID", "lead_id", "Modified_User", "Modified_Time"];
 
-    //   var container = document.getElementById('responsesPanel');
-    //   var html = "";
+      // function renderWidget(data) {
+      //   console.log("comes in renderWidget", data);
 
-    //   if (!data || data.length === 0) {
-    //     container.innerHTML = "<p style='text-align:center; color:#777;'>No responses found.</p>";
-    //     return;
-    //   }
+      //   var container = document.getElementById('responsesPanel');
+      //   var html = "";
 
-    //   data.forEach(function (record, index) {
-    //     // -- Separation Logic --
-    //     var systemHtml = "";
-    //     var otherHtml = "";
+      //   if (!data || data.length === 0) {
+      //     container.innerHTML = "<p style='text-align:center; color:#777;'>No responses found.</p>";
+      //     return;
+      //   }
 
-    //     // Loop through all keys in the record object dynamically
-    //     Object.keys(record).forEach(function (key) {
-    //       var val = record[key];
+      //   data.forEach(function (record, index) {
+      //     // -- Separation Logic --
+      //     var systemHtml = "";
+      //     var otherHtml = "";
 
-    //       // Skip empty arrays or empty strings if desired (Comment out if you want to show empty fields)
-    //       if (val === "" || (Array.isArray(val) && val.length === 0)) return;
+      //     // Loop through all keys in the record object dynamically
+      //     Object.keys(record).forEach(function (key) {
+      //       var val = record[key];
 
-    //       // Format Key (replace _ with space)
-    //       var label = key.replace(/_/g, " ");
+      //       // Skip empty arrays or empty strings if desired (Comment out if you want to show empty fields)
+      //       if (val === "" || (Array.isArray(val) && val.length === 0)) return;
 
-    //       // Format Value (handle arrays like photos)
-    //       var displayVal = Array.isArray(val) ? val.join(", ") : val;
+      //       // Format Key (replace _ with space)
+      //       var label = key.replace(/_/g, " ");
 
-    //       var fieldHtml = `
-    //                     <div class="field-box ${compulsoryFields.includes(key) ? 'system-box' : ''}">
-    //                         <div class="field-label">${label}</div>
-    //                         <div class="field-value">${displayVal}</div>
-    //                     </div>
-    //                 `;
+      //       // Format Value (handle arrays like photos)
+      //       var displayVal = Array.isArray(val) ? val.join(", ") : val;
 
-    //       if (compulsoryFields.includes(key)) {
-    //         systemHtml += fieldHtml;
-    //       } else {
-    //         otherHtml += fieldHtml;
-    //       }
-    //     });
+      //       var fieldHtml = `
+      //                     <div class="field-box ${compulsoryFields.includes(key) ? 'system-box' : ''}">
+      //                         <div class="field-label">${label}</div>
+      //                         <div class="field-value">${displayVal}</div>
+      //                     </div>
+      //                 `;
 
-    //     // -- Build Card HTML --
-    //     html += `
-    //                 <div class="response-card">
-    //                     <div class="accordion-header" onclick="toggleAccordion(this)">
-    //                         <div>
-    //                             <span class="header-title">Response ID : ${record.ID || 'N/A'}</span>
-    //                            <!-- <span class="header-meta">ID : ${record.ID || 'N/A'}</span> -->
-    //                             <span class="header-meta">| Updated At : ${record.Modified_Time || ''}</span>
-    //                         </div>
-    //                         <div class="arrow">▼</div>
-    //                     </div>
-    //                     <div class="accordion-content">
+      //       if (compulsoryFields.includes(key)) {
+      //         systemHtml += fieldHtml;
+      //       } else {
+      //         otherHtml += fieldHtml;
+      //       }
+      //     });
 
-    //                         <!-- System Info Section -->
-    //                         <!--  <div class="section-title">System Information</div>
-    //                          <div class="system-container"> 
-    //                              ${systemHtml} 
-    //                          </div> -->
+      //     // -- Build Card HTML --
+      //     html += `
+      //                 <div class="response-card">
+      //                     <div class="accordion-header" onclick="toggleAccordion(this)">
+      //                         <div>
+      //                             <span class="header-title">Response ID : ${record.ID || 'N/A'}</span>
+      //                            <!-- <span class="header-meta">ID : ${record.ID || 'N/A'}</span> -->
+      //                             <span class="header-meta">| Updated At : ${record.Modified_Time || ''}</span>
+      //                         </div>
+      //                         <div class="arrow">▼</div>
+      //                     </div>
+      //                     <div class="accordion-content">
 
-    //                         <!-- Dynamic Fields Section -->
-    //                         ${otherHtml ? `
-    //                             <div class="section-title" style="margin-top:20px;">Form Details</div>
-    //                             <div class="grid-container">
-    //                                 ${otherHtml}
-    //                             </div>
-    //                         ` : ''}
-    //                     </div>
-    //                 </div>
-    //             `;
-    //   });
+      //                         <!-- System Info Section -->
+      //                         <!--  <div class="section-title">System Information</div>
+      //                          <div class="system-container"> 
+      //                              ${systemHtml} 
+      //                          </div> -->
 
-    //   container.innerHTML = html;
-    // }
+      //                         <!-- Dynamic Fields Section -->
+      //                         ${otherHtml ? `
+      //                             <div class="section-title" style="margin-top:20px;">Form Details</div>
+      //                             <div class="grid-container">
+      //                                 ${otherHtml}
+      //                             </div>
+      //                         ` : ''}
+      //                     </div>
+      //                 </div>
+      //             `;
+      //   });
 
-    const CREATOR_BASE = "https://creatorapp.zohocloud.ca";
-    const IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".bmp"];
-    const VIDEO_EXTENSIONS = [".mp4", ".mov", ".wmv", ".flv", ".avi", ".mkv", ".webm"];
-    const FILE_EXTENSION_GROUPS = {
-      pdf: [".pdf"],
-      doc: [".doc", ".docx"],
-      sheet: [".xls", ".xlsx", ".csv"],
-      ppt: [".ppt", ".pptx"],
-      audio: [".mp3", ".wav", ".aac", ".ogg", ".m4a"],
-      zip: [".zip", ".rar", ".7z"]
-    };
-    const TYPE_META = {
-      image: { chip: "Image", label: "Image" },
-      video: { chip: "Video", label: "Video" },
-      pdf: { chip: "PDF", label: "PDF" },
-      doc: { chip: "DOC", label: "Document" },
-      sheet: { chip: "Sheet", label: "Spreadsheet" },
-      ppt: { chip: "PPT", label: "Presentation" },
-      audio: { chip: "Audio", label: "Audio" },
-      zip: { chip: "ZIP", label: "Archive" },
-      file: { chip: "File", label: "File" }
-    };
-    const ICONS = {
-      download: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      //   container.innerHTML = html;
+      // }
+
+      const CREATOR_BASE = "https://creatorapp.zohocloud.ca";
+      const IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".bmp"];
+      const VIDEO_EXTENSIONS = [".mp4", ".mov", ".wmv", ".flv", ".avi", ".mkv", ".webm"];
+      const FILE_EXTENSION_GROUPS = {
+        pdf: [".pdf"],
+        doc: [".doc", ".docx"],
+        sheet: [".xls", ".xlsx", ".csv"],
+        ppt: [".ppt", ".pptx"],
+        audio: [".mp3", ".wav", ".aac", ".ogg", ".m4a"],
+        zip: [".zip", ".rar", ".7z"]
+      };
+      const TYPE_META = {
+        image: { chip: "Image", label: "Image" },
+        video: { chip: "Video", label: "Video" },
+        pdf: { chip: "PDF", label: "PDF" },
+        doc: { chip: "DOC", label: "Document" },
+        sheet: { chip: "Sheet", label: "Spreadsheet" },
+        ppt: { chip: "PPT", label: "Presentation" },
+        audio: { chip: "Audio", label: "Audio" },
+        zip: { chip: "ZIP", label: "Archive" },
+        file: { chip: "File", label: "File" }
+      };
+      const ICONS = {
+        download: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 5v10"/>
             <path d="M6 11l6 6 6-6"/>
             <path d="M5 19h14"/>
           </svg>`,
-      image: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        image: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="4" width="18" height="16" rx="2" />
             <circle cx="9" cy="9" r="2" />
             <path d="M21 16l-5-5-4 4-2-2-4 4" />
           </svg>`,
-      video: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        video: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="4" width="18" height="16" rx="2" />
             <path d="M10 9l5 3-5 3z" />
             <path d="M7 4v16" />
           </svg>`,
-      pdf: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        pdf: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" />
             <path d="M14 2v6h6" />
             <path d="M8 15h2a2 2 0 0 0 0-4H8v4zm6-4h2m-2 4v-4m2 4v-4m2 4h1" />
           </svg>`,
-      doc: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        doc: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" />
             <path d="M14 2v6h6" />
             <path d="M8 13h8m-8 4h5" />
           </svg>`,
-      sheet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        sheet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="4" y="3" width="16" height="18" rx="2" />
             <path d="M4 9h16M4 15h16M12 3v18" />
           </svg>`,
-      ppt: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        ppt: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="4" width="18" height="16" rx="2" />
             <path d="M12 8a4 4 0 1 1 0 8h-3V8h3z" />
           </svg>`,
-      audio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        audio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 18V5l12-2v13" />
             <circle cx="6" cy="18" r="3" />
             <circle cx="18" cy="16" r="3" />
           </svg>`,
-      zip: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        zip: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="6" y="2" width="12" height="20" rx="2" />
             <path d="M12 6v2m0 2v2m0 2v4" />
             <path d="M10 6h4" />
           </svg>`,
-      file: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        file: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" />
             <path d="M14 2v6h6" />
           </svg>`
-    };
+      };
 
-    const stripQuery = (value = "") => value.split("?")[0];
+      const stripQuery = (value = "") => value.split("?")[0];
 
-    const isLikelyUrl = (value = "") => {
-      if (!value || typeof value !== "string") return false;
-      const trimmed = value.trim();
-      if (!trimmed) return false;
-      if (
-        trimmed.startsWith("http://") ||
-        trimmed.startsWith("https://") ||
-        trimmed.startsWith("//") ||
-        trimmed.startsWith("/api/")
-      ) {
-        return true;
-      }
-      return /^data:(image|video|application|audio)\//i.test(trimmed);
-    };
-
-    const getFileExtension = (value = "") => {
-      if (!value || typeof value !== "string") return "";
-      const clean = stripQuery(value).toLowerCase();
-      const dotIndex = clean.lastIndexOf(".");
-      if (dotIndex === -1) return "";
-      return clean.slice(dotIndex);
-    };
-
-    const coerceValueToString = (value) => {
-      if (value === null || value === undefined) return "";
-      if (typeof value === "string") return value;
-      if (typeof value === "number" || typeof value === "boolean") return String(value);
-      if (typeof value === "object") {
-        const urlCandidate = pickMetaString(value, URL_KEYS);
-        if (urlCandidate) return urlCandidate;
-        const fallback = pickMetaString(value, [
-          "value",
-          "display_value",
-          "displayValue",
-          "name",
-          "label"
-        ]);
-        return fallback || "";
-      }
-      return "";
-    };
-
-    const deriveFileNameFromUrl = (value = "") => {
-      const clean = stripQuery(value);
-      if (!clean) return "";
-      const segments = clean.split("/");
-      return segments.pop() || "";
-    };
-
-    const extractQueryValues = (value = "") => {
-      if (!value || typeof value !== "string") return [];
-      const queryIndex = value.indexOf("?");
-      if (queryIndex === -1) return [];
-      const queryString = value.slice(queryIndex + 1);
-      if (!queryString) return [];
-
-      return queryString
-        .split("&")
-        .map((segment) => {
-          const [, paramValue = ""] = segment.split("=");
-          try {
-            return decodeURIComponent(paramValue || "").trim();
-          } catch (err) {
-            return (paramValue || "").trim();
-          }
-        })
-        .filter(Boolean);
-    };
-
-    const pickMetaString = (meta, keys = []) => {
-      if (!meta || typeof meta !== "object") return "";
-      for (const key of keys) {
-        const candidate = meta[key];
-        if (typeof candidate === "string" && candidate.trim()) {
-          return candidate.trim();
+      const isLikelyUrl = (value = "") => {
+        if (!value || typeof value !== "string") return false;
+        const trimmed = value.trim();
+        if (!trimmed) return false;
+        if (
+          trimmed.startsWith("http://") ||
+          trimmed.startsWith("https://") ||
+          trimmed.startsWith("//") ||
+          trimmed.startsWith("/api/")
+        ) {
+          return true;
         }
-      }
-      return "";
-    };
+        return /^data:(image|video|application|audio)\//i.test(trimmed);
+      };
 
-    const URL_KEYS = [
-      "download_url",
-      "downloadUrl",
-      "file_url",
-      "fileUrl",
-      "url",
-      "href",
-      "link",
-      "link_url",
-      "linkUrl",
-      "response_url",
-      "responseUrl",
-      "attachment_url",
-      "attachmentUrl",
-      "source_url",
-      "sourceUrl"
-    ];
+      const getFileExtension = (value = "") => {
+        if (!value || typeof value !== "string") return "";
+        const clean = stripQuery(value).toLowerCase();
+        const dotIndex = clean.lastIndexOf(".");
+        if (dotIndex === -1) return "";
+        return clean.slice(dotIndex);
+      };
 
-    const collectCandidateStrings = (value, meta) => {
-      const candidates = [value, ...extractQueryValues(value)];
-      if (meta && typeof meta === "object") {
-        [
+      const coerceValueToString = (value) => {
+        if (value === null || value === undefined) return "";
+        if (typeof value === "string") return value;
+        if (typeof value === "number" || typeof value === "boolean") return String(value);
+        if (typeof value === "object") {
+          const urlCandidate = pickMetaString(value, URL_KEYS);
+          if (urlCandidate) return urlCandidate;
+          const fallback = pickMetaString(value, [
+            "value",
+            "display_value",
+            "displayValue",
+            "name",
+            "label"
+          ]);
+          return fallback || "";
+        }
+        return "";
+      };
+
+      const deriveFileNameFromUrl = (value = "") => {
+        const clean = stripQuery(value);
+        if (!clean) return "";
+        const segments = clean.split("/");
+        return segments.pop() || "";
+      };
+
+      const extractQueryValues = (value = "") => {
+        if (!value || typeof value !== "string") return [];
+        const queryIndex = value.indexOf("?");
+        if (queryIndex === -1) return [];
+        const queryString = value.slice(queryIndex + 1);
+        if (!queryString) return [];
+
+        return queryString
+          .split("&")
+          .map((segment) => {
+            const [, paramValue = ""] = segment.split("=");
+            try {
+              return decodeURIComponent(paramValue || "").trim();
+            } catch (err) {
+              return (paramValue || "").trim();
+            }
+          })
+          .filter(Boolean);
+      };
+
+      const pickMetaString = (meta, keys = []) => {
+        if (!meta || typeof meta !== "object") return "";
+        for (const key of keys) {
+          const candidate = meta[key];
+          if (typeof candidate === "string" && candidate.trim()) {
+            return candidate.trim();
+          }
+        }
+        return "";
+      };
+
+      const URL_KEYS = [
+        "download_url",
+        "downloadUrl",
+        "file_url",
+        "fileUrl",
+        "url",
+        "href",
+        "link",
+        "link_url",
+        "linkUrl",
+        "response_url",
+        "responseUrl",
+        "attachment_url",
+        "attachmentUrl",
+        "source_url",
+        "sourceUrl"
+      ];
+
+      const collectCandidateStrings = (value, meta) => {
+        const candidates = [value, ...extractQueryValues(value)];
+        if (meta && typeof meta === "object") {
+          [
+            "file_name",
+            "fileName",
+            "filename",
+            "name",
+            "display_name",
+            "displayName",
+            "display_value",
+            "displayValue",
+            "value"
+          ].forEach((key) => {
+            const candidate = meta[key];
+            if (typeof candidate === "string" && candidate.trim()) {
+              candidates.push(candidate.trim());
+            }
+          });
+        }
+        return candidates;
+      };
+
+      const extensionIsKnown = (ext) => {
+        if (!ext) return false;
+        if (IMAGE_EXTENSIONS.includes(ext) || VIDEO_EXTENSIONS.includes(ext)) return true;
+        return Object.values(FILE_EXTENSION_GROUPS).some((group) => group.includes(ext));
+      };
+
+      const findExtensionFromCandidates = (value, meta) => {
+        const candidates = collectCandidateStrings(value, meta);
+        let fallbackExt = "";
+
+        for (const candidate of candidates) {
+          const ext = getFileExtension(candidate);
+          if (!ext) continue;
+          if (extensionIsKnown(ext)) {
+            return ext;
+          }
+          if (!fallbackExt) {
+            fallbackExt = ext;
+          }
+        }
+
+        return fallbackExt;
+      };
+
+      const inferTypeFromMeta = (meta) => {
+        if (!meta || typeof meta !== "object") return "";
+        const rawType = [
+          meta.mime_type,
+          meta.mimetype,
+          meta.content_type,
+          meta.file_type,
+          meta.fileType,
+          meta.type,
+          meta.category
+        ]
+          .map((value) => (typeof value === "string" ? value.toLowerCase() : ""))
+          .find((value) => value);
+
+        if (!rawType) return "";
+        if (rawType.startsWith("image")) return "image";
+        if (rawType.startsWith("video")) return "video";
+        if (rawType.startsWith("audio")) return "audio";
+        if (rawType.includes("pdf")) return "pdf";
+        if (rawType.includes("spreadsheet") || rawType.includes("excel") || rawType.includes("sheet")) return "sheet";
+        if (rawType.includes("presentation") || rawType.includes("powerpoint") || rawType.includes("ppt")) return "ppt";
+        if (rawType.includes("zip") || rawType.includes("archive") || rawType.includes("compressed")) return "zip";
+        if (rawType.includes("doc")) return "doc";
+        return "";
+      };
+
+      const removeLoadingState = (el) => {
+        if (!el || !el.closest) return;
+        const card = el.closest(".media-card");
+        if (!card) return;
+        card.classList.remove("loading");
+        const spinner = card.querySelector(".media-card__spinner");
+        if (spinner) spinner.remove();
+      };
+
+      const handleMediaLoad = (el) => {
+        removeLoadingState(el);
+      };
+
+      const handleMediaError = (el) => {
+        removeLoadingState(el);
+        const card = el.closest && el.closest(".media-card");
+        if (card) card.classList.add("media-card--error");
+      };
+
+      window.handleMediaLoad = handleMediaLoad;
+      window.handleMediaError = handleMediaError;
+
+      const formatDisplayName = (value = "") => {
+        if (!value) return "";
+        const trimmed = value.trim();
+        if (!trimmed) return "";
+        if (trimmed.toLowerCase() === "download") {
+          return "";
+        }
+        return trimmed;
+      };
+
+      const deriveDisplayName = (url, meta) => {
+        const metaName = pickMetaString(meta, [
           "file_name",
           "fileName",
           "filename",
@@ -1016,225 +1207,122 @@
           "display_name",
           "displayName",
           "display_value",
-          "displayValue",
-          "value"
-        ].forEach((key) => {
-          const candidate = meta[key];
-          if (typeof candidate === "string" && candidate.trim()) {
-            candidates.push(candidate.trim());
-          }
-        });
-      }
-      return candidates;
-    };
-
-    const extensionIsKnown = (ext) => {
-      if (!ext) return false;
-      if (IMAGE_EXTENSIONS.includes(ext) || VIDEO_EXTENSIONS.includes(ext)) return true;
-      return Object.values(FILE_EXTENSION_GROUPS).some((group) => group.includes(ext));
-    };
-
-    const findExtensionFromCandidates = (value, meta) => {
-      const candidates = collectCandidateStrings(value, meta);
-      let fallbackExt = "";
-
-      for (const candidate of candidates) {
-        const ext = getFileExtension(candidate);
-        if (!ext) continue;
-        if (extensionIsKnown(ext)) {
-          return ext;
-        }
-        if (!fallbackExt) {
-          fallbackExt = ext;
-        }
-      }
-
-      return fallbackExt;
-    };
-
-    const inferTypeFromMeta = (meta) => {
-      if (!meta || typeof meta !== "object") return "";
-      const rawType = [
-        meta.mime_type,
-        meta.mimetype,
-        meta.content_type,
-        meta.file_type,
-        meta.fileType,
-        meta.type,
-        meta.category
-      ]
-        .map((value) => (typeof value === "string" ? value.toLowerCase() : ""))
-        .find((value) => value);
-
-      if (!rawType) return "";
-      if (rawType.startsWith("image")) return "image";
-      if (rawType.startsWith("video")) return "video";
-      if (rawType.startsWith("audio")) return "audio";
-      if (rawType.includes("pdf")) return "pdf";
-      if (rawType.includes("spreadsheet") || rawType.includes("excel") || rawType.includes("sheet")) return "sheet";
-      if (rawType.includes("presentation") || rawType.includes("powerpoint") || rawType.includes("ppt")) return "ppt";
-      if (rawType.includes("zip") || rawType.includes("archive") || rawType.includes("compressed")) return "zip";
-      if (rawType.includes("doc")) return "doc";
-      return "";
-    };
-
-    const removeLoadingState = (el) => {
-      if (!el || !el.closest) return;
-      const card = el.closest(".media-card");
-      if (!card) return;
-      card.classList.remove("loading");
-      const spinner = card.querySelector(".media-card__spinner");
-      if (spinner) spinner.remove();
-    };
-
-    const handleMediaLoad = (el) => {
-      removeLoadingState(el);
-    };
-
-    const handleMediaError = (el) => {
-      removeLoadingState(el);
-      const card = el.closest && el.closest(".media-card");
-      if (card) card.classList.add("media-card--error");
-    };
-
-    window.handleMediaLoad = handleMediaLoad;
-    window.handleMediaError = handleMediaError;
-
-    const formatDisplayName = (value = "") => {
-      if (!value) return "";
-      const trimmed = value.trim();
-      if (!trimmed) return "";
-      if (trimmed.toLowerCase() === "download") {
-        return "";
-      }
-      return trimmed;
-    };
-
-    const deriveDisplayName = (url, meta) => {
-      const metaName = pickMetaString(meta, [
-        "file_name",
-        "fileName",
-        "filename",
-        "name",
-        "display_name",
-        "displayName",
-        "display_value",
-        "displayValue"
-      ]);
-      const fromUrl = deriveFileNameFromUrl(url);
-      return formatDisplayName(metaName || fromUrl);
-    };
-
-    function normalizeToFullUrl(value) {
-      if (!value || typeof value !== "string") return "";
-      if (value.startsWith("/api/")) return CREATOR_BASE + value;
-      return value;
-    }
-
-    function shouldRenderAsImage(value) {
-      if (!value || typeof value !== "string") return false;
-      const clean = stripQuery(value).toLowerCase();
-      const hasImageExtension = IMAGE_EXTENSIONS.some((ext) => clean.endsWith(ext));
-
-      if (hasImageExtension) {
-        return true;
-      }
-
-      if (clean.includes("/download")) {
-        const ext = getFileExtension(clean);
-        return !ext || IMAGE_EXTENSIONS.includes(ext);
-      }
-
-      return false;
-    }
-
-    const detectAssetType = (value, meta = null) => {
-      if (!value || typeof value !== "string") return "";
-      const ext = findExtensionFromCandidates(value, meta);
-      const metaCategory = inferTypeFromMeta(meta);
-
-      if (IMAGE_EXTENSIONS.includes(ext)) {
-        return "image";
-      }
-
-      if (!ext && shouldRenderAsImage(value)) {
-        return "image";
-      }
-
-      if (VIDEO_EXTENSIONS.includes(ext)) {
-        return "video";
-      }
-
-      for (const [type, extensions] of Object.entries(FILE_EXTENSION_GROUPS)) {
-        if (extensions.includes(ext)) {
-          return type;
-        }
-      }
-
-      if (metaCategory) {
-        return metaCategory;
-      }
-
-      if (shouldRenderAsImage(value)) {
-        return "image";
-      }
-
-      if (ext) {
-        return "file";
-      }
-
-      return "";
-    };
-
-    const buildAssetDescriptor = (value) => {
-      const candidate = coerceValueToString(value);
-      if (!candidate) return null;
-
-      if (!isLikelyUrl(candidate)) return null;
-      const normalized = normalizeToFullUrl(candidate) || candidate;
-      const rawMeta = (typeof value === "object" && value !== null) ? value : null;
-      const assetType = detectAssetType(normalized, rawMeta);
-      if (!assetType) return null;
-
-      const meta = TYPE_META[assetType] || TYPE_META.file;
-      const displayName = deriveDisplayName(candidate, rawMeta) || meta.label;
-
-      return {
-        url: normalized,
-        type: assetType,
-        chipLabel: meta.chip,
-        displayName
+          "displayValue"
+        ]);
+        const fromUrl = deriveFileNameFromUrl(url);
+        return formatDisplayName(metaName || fromUrl);
       };
-    };
 
-    const getTypeIconMarkup = (type) => ICONS[type] || ICONS.file;
+      function normalizeToFullUrl(value) {
+        if (!value || typeof value !== "string") return "";
+        if (value.startsWith("/api/")) return CREATOR_BASE + value;
+        return value;
+      }
 
-    const renderAssetCard = (asset) => {
-      if (!asset) return "";
+      function shouldRenderAsImage(value) {
+        if (!value || typeof value !== "string") return false;
+        const clean = stripQuery(value).toLowerCase();
+        const hasImageExtension = IMAGE_EXTENSIONS.some((ext) => clean.endsWith(ext));
 
-      const safeUrl = escapeHtml(asset.url);
-      const altName = escapeHtml(asset.displayName || asset.chipLabel || "Asset");
-      const displayName = asset.displayName ? escapeHtml(asset.displayName) : "";
-      const chip = escapeHtml(asset.chipLabel || "");
-      const fileNameMarkup = displayName ? `<div class="file-name">${displayName}</div>` : "";
-      const downloadButton = `
+        if (hasImageExtension) {
+          return true;
+        }
+
+        if (clean.includes("/download")) {
+          const ext = getFileExtension(clean);
+          return !ext || IMAGE_EXTENSIONS.includes(ext);
+        }
+
+        return false;
+      }
+
+      const detectAssetType = (value, meta = null) => {
+        if (!value || typeof value !== "string") return "";
+        const ext = findExtensionFromCandidates(value, meta);
+        const metaCategory = inferTypeFromMeta(meta);
+
+        if (IMAGE_EXTENSIONS.includes(ext)) {
+          return "image";
+        }
+
+        if (!ext && shouldRenderAsImage(value)) {
+          return "image";
+        }
+
+        if (VIDEO_EXTENSIONS.includes(ext)) {
+          return "video";
+        }
+
+        for (const [type, extensions] of Object.entries(FILE_EXTENSION_GROUPS)) {
+          if (extensions.includes(ext)) {
+            return type;
+          }
+        }
+
+        if (metaCategory) {
+          return metaCategory;
+        }
+
+        if (shouldRenderAsImage(value)) {
+          return "image";
+        }
+
+        if (ext) {
+          return "file";
+        }
+
+        return "";
+      };
+
+      const buildAssetDescriptor = (value) => {
+        const candidate = coerceValueToString(value);
+        if (!candidate) return null;
+
+        if (!isLikelyUrl(candidate)) return null;
+        const normalized = normalizeToFullUrl(candidate) || candidate;
+        const rawMeta = (typeof value === "object" && value !== null) ? value : null;
+        const assetType = detectAssetType(normalized, rawMeta);
+        if (!assetType) return null;
+
+        const meta = TYPE_META[assetType] || TYPE_META.file;
+        const displayName = deriveDisplayName(candidate, rawMeta) || meta.label;
+
+        return {
+          url: normalized,
+          type: assetType,
+          chipLabel: meta.chip,
+          displayName
+        };
+      };
+
+      const getTypeIconMarkup = (type) => ICONS[type] || ICONS.file;
+
+      const renderAssetCard = (asset) => {
+        if (!asset) return "";
+
+        const safeUrl = escapeHtml(asset.url);
+        const altName = escapeHtml(asset.displayName || asset.chipLabel || "Asset");
+        const displayName = asset.displayName ? escapeHtml(asset.displayName) : "";
+        const chip = escapeHtml(asset.chipLabel || "");
+        const fileNameMarkup = displayName ? `<div class="file-name">${displayName}</div>` : "";
+        const downloadButton = `
           <a href="${safeUrl}" class="media-card__action" target="_blank" rel="noopener noreferrer" title="Download ${altName}" aria-label="Download ${altName}">
             ${ICONS.download}
           </a>`;
-      const spinner = `<div class="media-card__spinner" aria-label="Loading asset"></div>`;
+        const spinner = `<div class="media-card__spinner" aria-label="Loading asset"></div>`;
 
-      if (asset.type === "image") {
-        return `
+        if (asset.type === "image") {
+          return `
             <div class="media-card media-card--image loading">
               ${downloadButton}
               ${spinner}
               <img src="${safeUrl}" alt="${altName}" loading="lazy" onload="handleMediaLoad(this)" onerror="handleMediaError(this)" />
             </div>
           `;
-      }
+        }
 
-      if (asset.type === "video") {
-        return `
+        if (asset.type === "video") {
+          return `
             <div class="media-card media-card--video loading">
               ${downloadButton}
               ${spinner}
@@ -1242,9 +1330,9 @@
               <span class="media-chip">${chip}</span>
             </div>
           `;
-      }
+        }
 
-      return `
+        return `
           <div class="media-card media-card--file">
             ${downloadButton}
             <div class="asset-icon" aria-hidden="true">${getTypeIconMarkup(asset.type)}</div>
@@ -1252,153 +1340,153 @@
             ${fileNameMarkup}
           </div>
         `;
-    };
+      };
 
-    function renderWidget(data) {
-      // console.log("comes in renderWidget", data);
-      const container = document.getElementById("responsesPanel");
-      if (!data || data.length === 0) {
-        container.innerHTML = "<p style='text-align:center;color:#777;'>No responses found.</p>";
-        return;
-      }
+      function renderWidget(data) {
+        // console.log("comes in renderWidget", data);
+        const container = document.getElementById("responsesPanel");
+        if (!data || data.length === 0) {
+          container.innerHTML = "<p style='text-align:center;color:#777;'>No responses found.</p>";
+          return;
+        }
 
-      const compulsoryFields = window.compulsoryFields || [];
-      let html = "";
+        const compulsoryFields = window.compulsoryFields || [];
+        let html = "";
 
-      data.forEach(function (record) {
-        // If is_master is false, skip this record? Or handle it differently?
-        // The query says: "in show responses of additinal question their is field is_master : false and then handle this type of thing also"
-        // Assuming we want to show it maybe with a different style or just ensure it renders?
+        data.forEach(function (record) {
+          // If is_master is false, skip this record? Or handle it differently?
+          // The query says: "in show responses of additinal question their is field is_master : false and then handle this type of thing also"
+          // Assuming we want to show it maybe with a different style or just ensure it renders?
 
-        // Let's add a visual indicator if it's NOT a master form (i.e. custom/additional questions form)
-        // The field might be boolean or string "false"
-        const isMaster = record.is_master === true || record.is_master === "true";
-        // If the field is missing, default to true? Or false? 
-        // Let's check if explicit false.
-        const isCustomForm = record.is_master === false || record.is_master === "false";
+          // Let's add a visual indicator if it's NOT a master form (i.e. custom/additional questions form)
+          // The field might be boolean or string "false"
+          const isMaster = record.is_master === true || record.is_master === "true";
+          // If the field is missing, default to true? Or false? 
+          // Let's check if explicit false.
+          const isCustomForm = record.is_master === false || record.is_master === "false";
 
-        let systemHtml = "";
-        let otherHtml = "";
+          let systemHtml = "";
+          let otherHtml = "";
 
-        // Check if this is a custom form response with Question/Answer structure
-        // The user provided example shows keys: { Questiom: "...", Answer: "..." }
-        // Note the typo "Questiom" in the user's data example.
-        if (isCustomForm && record.list && record.list.length > 0) {
-          console.log("record.list", record.list);
+          // Check if this is a custom form response with Question/Answer structure
+          // The user provided example shows keys: { Questiom: "...", Answer: "..." }
+          // Note the typo "Questiom" in the user's data example.
+          if (isCustomForm && record.list && record.list.length > 0) {
+            console.log("record.list", record.list);
 
-          record.list.forEach((item) => {
-            console.log("item", item);
-            const q = item.Questiom || item.Question;
-            const a = item.Answer;
+            record.list.forEach((item) => {
+              console.log("item", item);
+              const q = item.Questiom || item.Question;
+              const a = item.Answer;
 
-            otherHtml += `
+              otherHtml += `
                 <div class="field-box">
                   <div class="field-label">${escapeHtml(q)}</div>
                   <div class="field-value">${escapeHtml(coerceValueToString(a))}</div>
                 </div>
                `;
 
-          })
+            });
 
-          // We still might want to show system fields like Modified_Time
-          // Let's loop for system fields only
-          Object.keys(record).forEach(function (key) {
-            if (compulsoryFields.includes(key)) {
-              const val = record[key];
-              const label = key.replace(/_/g, " ");
-              const fieldHtml = `
+            // We still might want to show system fields like Modified_Time
+            // Let's loop for system fields only
+            Object.keys(record).forEach(function (key) {
+              if (compulsoryFields.includes(key)) {
+                const val = record[key];
+                const label = key.replace(/_/g, " ");
+                const fieldHtml = `
                     <div class="field-box system-box">
                       <div class="field-label">${escapeHtml(label)}</div>
                       <div class="field-value">${escapeHtml(coerceValueToString(val))}</div>
                     </div>`;
-              systemHtml += fieldHtml;
-            }
-          });
+                systemHtml += fieldHtml;
+              }
+            });
 
-        } else {
-          // Standard rendering for normal forms or unknown structure
-          Object.keys(record).forEach(function (key) {
-            if (key === "is_master") return;
-            // ... (existing logic)
-            const val = record[key];
-            if (val === "" || (Array.isArray(val) && val.length === 0)) return;
+          } else {
+            // Standard rendering for normal forms or unknown structure
+            Object.keys(record).forEach(function (key) {
+              if (key === "is_master") return;
+              // ... (existing logic)
+              const val = record[key];
+              if (val === "" || (Array.isArray(val) && val.length === 0)) return;
 
-            const label = key.replace(/_/g, " ");
-            const valuesArray = Array.isArray(val) ? val : [val];
-            const assets = valuesArray
-              .map(buildAssetDescriptor)
-              .filter(Boolean);
+              const label = key.replace(/_/g, " ");
+              const valuesArray = Array.isArray(val) ? val : [val];
+              const assets = valuesArray
+                .map(buildAssetDescriptor)
+                .filter(Boolean);
 
-            const isMediaField = assets.length > 0;
-            let fieldValueHtml = "";
+              const isMediaField = assets.length > 0;
+              let fieldValueHtml = "";
 
-            if (isMediaField) {
-              const cards = assets.map(renderAssetCard).join("");
-              fieldValueHtml = `<div class="media-grid">${cards}</div>`;
-            } else {
-              const textValue = valuesArray
-                .map((item) => escapeHtml(coerceValueToString(item)))
-                .filter((item) => item !== "")
-                .join(", ");
-              fieldValueHtml = textValue || "—";
-            }
+              if (isMediaField) {
+                const cards = assets.map(renderAssetCard).join("");
+                fieldValueHtml = `<div class="media-grid">${cards}</div>`;
+              } else {
+                const textValue = valuesArray
+                  .map((item) => escapeHtml(coerceValueToString(item)))
+                  .filter((item) => item !== "")
+                  .join(", ");
+                fieldValueHtml = textValue || "—";
+              }
 
-            const fieldHtml = `
+              const fieldHtml = `
             <div class="field-box ${compulsoryFields.includes(key) ? "system-box" : ""} ${isMediaField ? "media-field" : ""}">
               <div class="field-label">${escapeHtml(label)}</div>
               <div class="field-value">${fieldValueHtml}</div>
             </div>`;
 
-            if (compulsoryFields.includes(key)) {
-              systemHtml += fieldHtml;
-            } else {
-              otherHtml += fieldHtml;
-            }
-          });
-        }
+              if (compulsoryFields.includes(key)) {
+                systemHtml += fieldHtml;
+              } else {
+                otherHtml += fieldHtml;
+              }
+            });
+          }
 
-        html += `
+          html += `
       <div class="response-card" style="${isCustomForm ? 'border-left: 4px solid #f59e0b;' : ''}">
         <div class="accordion-header" onclick="toggleAccordion(this)">
           <div>
             <span class="header-title">Response ID : ${record.ID || record?.list?.[0]?.form_id || "N/A"} ${isCustomForm ? '<span class="file-chip" style="background:#fef3c7; color:#d97706; margin-left:8px; font-size:0.7rem;">Custom Form</span>' : ''}</span>
             <span class="header-meta"> | Updated At : ${record.Modified_Time || record?.list?.[0]?.Modified_Time
-              || ""}</span>
+            || ""}</span>
           </div>
           <div class="arrow">▼</div>
         </div>
         <div class="accordion-content">
           ${otherHtml
-            ? `<div class="section-title" style="margin-top:20px;">Form Details</div>
+              ? `<div class="section-title" style="margin-top:20px;">Form Details</div>
                <div class="grid-container">${otherHtml}</div>`
-            : ""}
+              : ""}
         </div>
       </div>`;
-      });
+        });
 
-      container.innerHTML = html;
-    }
-
-
-    const renderResponses = (responses = []) => {
-      log("Rendering responses", responses);
-      if (!responses.length) {
-        responsesSection.classList.add("placeholder");
-        responsesSection.innerHTML = "No responses found for this lead.";
-        return;
+        container.innerHTML = html;
       }
 
-      const rows = responses.map((row, index) => {
-        const responseId = row.response_id;
-        // const submittedDate = formatDateTime(row.response_date ?? row.submitted_on ?? row.submittedOn ?? row.date);
-        const leadId = row.lead_id;
-        const leadName = row.name.display_value;
-        const responseUrl = row.response_url ?? row.responseUrl ?? row.link ?? row.response_link;
-        const urlCell = responseUrl
-          ? `<a class="link" href="${responseUrl}" target="_blank" rel="noopener noreferrer">View response</a>`
-          : "—";
 
-        return `
+      const renderResponses = (responses = []) => {
+        log("Rendering responses", responses);
+        if (!responses.length) {
+          responsesSection.classList.add("placeholder");
+          responsesSection.innerHTML = "No responses found for this lead.";
+          return;
+        }
+
+        const rows = responses.map((row, index) => {
+          const responseId = row.response_id;
+          // const submittedDate = formatDateTime(row.response_date ?? row.submitted_on ?? row.submittedOn ?? row.date);
+          const leadId = row.lead_id;
+          const leadName = row.name.display_value;
+          const responseUrl = row.response_url ?? row.responseUrl ?? row.link ?? row.response_link;
+          const urlCell = responseUrl
+            ? `<a class="link" href="${responseUrl}" target="_blank" rel="noopener noreferrer">View response</a>`
+            : "—";
+
+          return `
           <tr>
             <td>${responseId ?? "—"}</td>
             <td>${leadName}</td>
@@ -1406,10 +1494,10 @@
             <td>${urlCell}</td>
           </tr>
         `;
-      }).join("");
+        }).join("");
 
-      responsesSection.classList.remove("placeholder");
-      responsesSection.innerHTML = `
+        responsesSection.classList.remove("placeholder");
+        responsesSection.innerHTML = `
         <table>
           <thead>
             <tr>
@@ -1424,253 +1512,289 @@
           </tbody>
         </table>
       `;
-    };
+      };
 
-    const loadLeadResponses = async (leadId) => {
-      log("Loading responses for lead", leadId);
-      if (!leadId) {
-        responsesSection.classList.add("placeholder");
-        responsesSection.innerHTML = "Select a lead to load responses.";
-        return;
-      }
+      const loadLeadResponses = async (leadId) => {
+        log("Loading responses for lead", leadId);
+        if (!leadId) {
+          responsesSection.classList.add("placeholder");
+          responsesSection.innerHTML = "Select a lead to load responses.";
+          return;
+        }
 
-      responsesSection.classList.remove("placeholder");
-      responsesSection.innerHTML = `<div class="message info">Loading responses…</div>`;
+        responsesSection.classList.remove("placeholder");
+        responsesSection.innerHTML = `<div class="message info">Loading responses…</div>`;
 
-      try {
-        const resp = await ZOHO.CRM.FUNCTIONS.execute("getLeadFormResponses", {
-          arguments: JSON.stringify({ leadId })
-        });
-        // console.log("getLeadFormResponses response", resp);
+        try {
+          const resp = await ZOHO.CRM.FUNCTIONS.execute("getLeadFormResponses", {
+            arguments: JSON.stringify({ leadId })
+          });
+          // console.log("getLeadFormResponses response", resp);
 
 
-        ensureFunctionSuccess(resp, "getLeadFormResponses");
-        const payload = extractFunctionPayload(resp);
-        const rows = Array.isArray(payload.responses) ? payload.responses : [];
-        log("Creator response payload 123", payload);
+          ensureFunctionSuccess(resp, "getLeadFormResponses");
+          const payload = extractFunctionPayload(resp);
+          const rows = Array.isArray(payload.responses) ? payload.responses : [];
+          log("Creator response payload 123", payload);
 
-        // renderResponses(rows);
-        renderWidget(payload.responses);
-      } catch (err) {
-        console.error("Error loading responses", err);
-        const readableError = describeError(err);
-        responsesSection.innerHTML = `
+          // renderResponses(rows);
+          renderWidget(payload.responses);
+        } catch (err) {
+          console.error("Error loading responses", err);
+          const readableError = describeError(err);
+          responsesSection.innerHTML = `
             <div class="message error">
               Unable to load responses.<br/>
               <strong>Details:</strong> ${escapeHtml(readableError)}
             </div>
           `;
+        }
+      };
+
+      // Fetch all templates using Zoho CRM SDK
+      const loadTemplates = async () => {
+        log("Loading CRM email templates");
+
+        try {
+          const resp = await ZOHO.CRM.API.getAllRecords({
+            Entity: "settings/email_templates"
+          });
+          const templates = resp.email_templates || [];
+          log("Templates response", templates);
+          console.log("templates", templates);
+          selectEl.innerHTML = '<option value="">Select Form Template</option>';
+          templates.forEach(tpl => {
+            if (tpl.folder.name === "Email Templates") {
+              const opt = document.createElement("option");
+              opt.value = tpl.id;
+              opt.textContent = tpl.name;
+              selectEl.appendChild(opt);
+            }
+          });
+        } catch (err) {
+          console.error("Error loading templates", err);
+          showMessage("Failed to load templates.", "error");
+        }
+      };
+
+
+      function toggleAccordion(element) {
+        // Toggle active class on header
+        element.classList.toggle("active");
+
+        // Toggle show class on content (next sibling)
+        var content = element.nextElementSibling;
+        if (content.style.display === "block") {
+          content.style.display = "none";
+        } else {
+          content.style.display = "block";
+        }
       }
-    };
 
-    // Fetch all templates using Zoho CRM SDK
-    const loadTemplates = async () => {
-      log("Loading CRM email templates");
+      // Fetch related questions for selected template (optional preview placeholder)
+      const loadQuestions = async (templateId) => {
+        previewEl.innerHTML = "";
+        if (!templateId) return;
+        log("Loading question preview for template", templateId);
 
-      try {
-        const resp = await ZOHO.CRM.API.getAllRecords({
-          Entity: "settings/email_templates"
-        });
-        const templates = resp.email_templates || [];
-        log("Templates response", templates);
-        console.log("templates", templates);
-        selectEl.innerHTML = '<option value="">Select Form Template</option>';
-        templates.forEach(tpl => {
-          if (tpl.folder.name === "Email Templates") {
-            const opt = document.createElement("option");
-            opt.value = tpl.id;
-            opt.textContent = tpl.name;
-            selectEl.appendChild(opt);
+        try {
+          const resp = await ZOHO.CRM.API.getRelatedRecords({
+            Entity: "Form_Templates",
+            RelatedList: "New_QuestionForm",
+            RecordID: templateId,
+            per_page: 200,
+            fields: ["Question_Text"]
+          });
+
+          const questions = resp.data || [];
+          if (questions.length === 0) {
+            previewEl.innerHTML = "<em>No questions found.</em>";
+            return;
           }
-        });
-      } catch (err) {
-        console.error("Error loading templates", err);
-        showMessage("Failed to load templates.", "error");
-      }
-    };
+        } catch (err) {
+          console.error("Error loading questions", err);
+          previewEl.innerHTML = "<em>Error fetching questions.</em>";
+        }
+      };
 
+      const renderAddedQuestions = () => {
+        if (!addedQuestionsListEl) return;
+        addedQuestionsListEl.innerHTML = "";
+        addedQuestions.forEach((q, index) => {
+          const div = document.createElement("div");
+          div.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: #f1f5f9; padding: 6px 10px; border-radius: 4px; border: 1px solid #e2e8f0; font-size: 0.9rem;";
 
-    function toggleAccordion(element) {
-      // Toggle active class on header
-      element.classList.toggle("active");
+          const span = document.createElement("span");
+          span.textContent = q.question;
 
-      // Toggle show class on content (next sibling)
-      var content = element.nextElementSibling;
-      if (content.style.display === "block") {
-        content.style.display = "none";
-      } else {
-        content.style.display = "block";
-      }
-    }
+          const delBtn = document.createElement("button");
+          delBtn.innerHTML = "&times;";
+          delBtn.style.cssText = "width: 24px; height: 24px; padding: 0; line-height: 1; margin: 0; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;";
+          delBtn.onclick = () => {
+            addedQuestions.splice(index, 1);
+            renderAddedQuestions();
+          };
 
-    // Fetch related questions for selected template (optional preview placeholder)
-    const loadQuestions = async (templateId) => {
-      previewEl.innerHTML = "";
-      if (!templateId) return;
-      log("Loading question preview for template", templateId);
-
-      try {
-        const resp = await ZOHO.CRM.API.getRelatedRecords({
-          Entity: "Form_Templates",
-          RelatedList: "New_QuestionForm",
-          RecordID: templateId,
-          per_page: 200,
-          fields: ["Question_Text"]
+          div.appendChild(span);
+          div.appendChild(delBtn);
+          addedQuestionsListEl.appendChild(div);
         });
 
-        const questions = resp.data || [];
-        if (questions.length === 0) {
-          previewEl.innerHTML = "<em>No questions found.</em>";
+        // Update states whenever list changes
+        setButtonState();
+      };
+
+      addQuestionBtn.addEventListener("click", () => {
+        const val = additionalQuestionInput.value.trim();
+        if (!val) return;
+
+        addedQuestions.push({
+          question: val,
+          type: "single_line"
+        });
+
+        additionalQuestionInput.value = "";
+        renderAddedQuestions();
+      });
+
+      // Allow Enter key to add question
+      additionalQuestionInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          addQuestionBtn.click();
+        }
+      });
+
+      // Call Deluge function to send template or generate link
+      const invokeFunction = async (leadId, mode = "send") => {
+        log(`${mode === "send" ? "Sending" : "Generating"} template for lead`, leadId, {
+          template: selectEl.value,
+          hasCustomQuestions: addedQuestions.length > 0
+        });
+
+        const hasTemplate = Boolean(selectEl.value);
+        const hasQuestions = addedQuestions.length > 0;
+
+        if (!leadId) {
+          showMessage("Lead ID missing; open widget via Lead button.", "error");
           return;
         }
-      } catch (err) {
-        console.error("Error loading questions", err);
-        previewEl.innerHTML = "<em>Error fetching questions.</em>";
-      }
-    };
 
-    const renderAddedQuestions = () => {
-      addedQuestionsListEl.innerHTML = "";
-      addedQuestions.forEach((q, index) => {
-        const div = document.createElement("div");
-        div.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: #f1f5f9; padding: 6px 10px; border-radius: 4px; border: 1px solid #e2e8f0; font-size: 0.9rem;";
+        if (!hasTemplate && !hasQuestions) {
+          showMessage("Please select a template or add questions.", "error");
+          return;
+        }
 
-        const span = document.createElement("span");
-        span.textContent = q.question;
+        if (mode === "send" && leadEmailOptOut) {
+          showMessage("Lead has opted out of email communication.", "error");
+          return;
+        }
 
-        const delBtn = document.createElement("button");
-        delBtn.innerHTML = "&times;";
-        delBtn.style.cssText = "width: 24px; height: 24px; padding: 0; line-height: 1; margin: 0; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;";
-        delBtn.onclick = () => {
-          addedQuestions.splice(index, 1);
-          renderAddedQuestions();
+        const activeButton = mode === "send" ? sendBtn : generateLinkBtn;
+        if (activeButton) activeButton.disabled = true;
+        showMessage(mode === "send" ? "Sending form…" : "Generating link…", "info");
+
+        const formTitle = formTitleInput.value.trim() || "Untitled Form";
+        const formPayload = hasQuestions
+          ? {
+            title: formTitle,
+            questions: addedQuestions.map((q) => ({ question: q.question }))
+          }
+          : null;
+
+        const args = {
+          leadId,
+          emailTemplateId: selectEl.value
         };
 
-        div.appendChild(span);
-        div.appendChild(delBtn);
-        addedQuestionsListEl.appendChild(div);
-      });
+        if (formPayload) {
+          args.formDetails = JSON.stringify(formPayload);
+        }
 
-      // Update states whenever list changes
-      setButtonState();
-    };
+        try {
+          console.log("args", args);
 
-    addQuestionBtn.addEventListener("click", () => {
-      const val = additionalQuestionInput.value.trim();
-      if (!val) return;
+          const resp = await ZOHO.CRM.FUNCTIONS.execute("emailsendfunction", { arguments: JSON.stringify(args) });
+          ensureFunctionSuccess(resp, "emailsendfunction");
+          log("emailsendfunction response", resp);
 
-      addedQuestions.push({
-        question: val,
-        type: "single_line"
-      });
+          const outputObj = JSON.parse(resp.details.output);
+          const formLink = outputObj.formLink;
 
-      additionalQuestionInput.value = "";
-      renderAddedQuestions();
-    });
+          showMessage(
+            mode === "send"
+              ? "Form sent successfully to the lead."
+              : "Form link generated.",
+            "success"
+          );
+          addFormLink(formLink);
 
-    // Allow Enter key to add question
-    additionalQuestionInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        addQuestionBtn.click();
-      }
-    });
+          if (formPayload) {
+            formTitleInput.value = "";
+            addedQuestions = [];
+            renderAddedQuestions();
+          }
 
-    // Call Deluge function to send template
-    const invokeFunction = async (leadId) => {
-      log("Sending template for lead", leadId, "with template", selectEl.value);
-
-      const hasTemplate = Boolean(selectEl.value);
-      const hasQuestions = addedQuestions.length > 0;
-
-      if (!hasTemplate && !hasQuestions) {
-        showMessage("Please select a template or add questions.", "error");
-        return;
-      }
-
-      sendBtn.disabled = true;
-      showMessage("Sending form…", "info");
-
-      // If user typed something but didn't click Add, consider adding it?
-      // For now, let's just use the list. If list is empty and input has value, maybe prompt or add?
-      // Let's keep it strict: only what's in the list.
-
-      const formTitle = formTitleInput.value.trim() || "Untitled Form";
-      const formPayload = {
-        title: formTitle,
-        questions: addedQuestions.map(q => ({ question: q.question }))
+          if (mode === "send") {
+            await loadLeadResponses(leadId);
+          }
+        } catch (err) {
+          console.error("Error calling function", err);
+          const readableError = describeError(err);
+          showMessage(
+            `${mode === "send" ? "Failed to send form." : "Failed to generate link."} ${escapeHtml(readableError)}`,
+            "error"
+          );
+        } finally {
+          if (activeButton) {
+            activeButton.disabled = false;
+          }
+          setButtonState();
+        }
       };
 
-      const args = {
-        leadId,
-        emailTemplateId: selectEl.value,
-        formDetails: JSON.stringify(formPayload)
-      };
+      selectEl.addEventListener("change", async () => {
+        log("Template selection changed", selectEl.value);
+        // await loadQuestions(selectEl.value);
+        setButtonState();
+      });
 
-      try {
-        console.log("args", args);
-        
-        const resp = await ZOHO.CRM.FUNCTIONS.execute("emailsendfunction", { arguments: JSON.stringify(args) });
-        ensureFunctionSuccess(resp, "emailsendfunction");
-        log("emailsendfunction response", resp);
-
-        let outputObj = JSON.parse(resp.details.output);
-        // console.log(resp);
-
-
-
-        // 2. Extract the link
-        let formLink = outputObj.formLink;
-
-        // console.log("formLink", formLink);
-        showMessage("Form sent successfully to the lead.", "success");
-        addFormLink(formLink);
-
-        // Reset form fields
-        formTitleInput.value = "";
-        addedQuestions = [];
-        renderAddedQuestions();
-
-        await loadLeadResponses(leadId);
-      } catch (err) {
-        console.error("Error calling function", err);
-        const readableError = describeError(err);
-        showMessage(`Failed to send form. ${escapeHtml(readableError)}`, "error");
-      } finally {
-        sendBtn.disabled = false;
-      }
-    };
-
-    selectEl.addEventListener("change", async () => {
-      log("Template selection changed", selectEl.value);
-      // await loadQuestions(selectEl.value);
-      setButtonState();
-    });
-
-    sendBtn.addEventListener("click", async () => {
-      log("Send button clicked", { currentLeadId, templateId: selectEl.value });
-      await invokeFunction(currentLeadId);
-    });
-
-    // Initialize the embedded widget
-    log("Initializing Zoho embedded app");
-    ZOHO.embeddedApp.on("PageLoad", function (data) {
-      log("PageLoad event data", data);
-      currentLeadId = resolveLeadId(data);
-      log("Resolved leadId after PageLoad", currentLeadId);
-
-      if (!currentLeadId) {
-        showMessage("Lead ID missing; open widget via Lead button.", "error");
-        return;
+      if (generateLinkBtn) {
+        generateLinkBtn.addEventListener("click", async () => {
+          log("Generate link button clicked", {
+            currentLeadId,
+            templateId: selectEl.value,
+            hasQuestions: addedQuestions.length > 0
+          });
+          await invokeFunction(currentLeadId, "generate");
+        });
       }
 
-      loadTemplates();
-      loadLeadResponses(currentLeadId);
-      setButtonState();
-    });
+      sendBtn.addEventListener("click", async () => {
+        log("Send button clicked", { currentLeadId, templateId: selectEl.value });
+        await invokeFunction(currentLeadId, "send");
+      });
 
-    ZOHO.embeddedApp.init();
-  </script>
-</body>
+      // Initialize the embedded widget
+      log("Initializing Zoho embedded app");
+      ZOHO.embeddedApp.on("PageLoad", function (data) {
+        log("PageLoad event data", data);
+        currentLeadId = resolveLeadId(data);
+        log("Resolved leadId after PageLoad", currentLeadId);
+
+        if (!currentLeadId) {
+          showMessage("Lead ID missing; open widget via Lead button.", "error");
+          return;
+        }
+
+        loadTemplates();
+        loadLeadResponses(currentLeadId);
+        loadLeadDetails(currentLeadId);
+        setButtonState();
+      });
+
+      ZOHO.embeddedApp.init();
+    </script>
+  </body>
 
 </html>
