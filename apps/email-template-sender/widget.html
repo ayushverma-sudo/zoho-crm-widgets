@@ -759,6 +759,7 @@
         const hasQuestions = addedQuestions.length > 0;
         const hasLead = Boolean(currentLeadId);
 
+        const canAct = hasLead && (hasTemplate || hasQuestions);
         // Mutually exclusive usage (unchanged)
         formTitleInput.disabled = hasTemplate;
         additionalQuestionInput.disabled = hasTemplate;
@@ -1409,7 +1410,7 @@
               if (key === "is_master") return;
               // ... (existing logic)
               const val = record[key];
-              if (val === "" || (Array.isArray(val) && val.length === 0)) return;
+              if (Array.isArray(val) && val.length === 0) return;
 
               const label = key.replace(/_/g, " ");
               const valuesArray = Array.isArray(val) ? val : [val];
@@ -1561,6 +1562,22 @@
           });
           const templates = resp.email_templates || [];
           log("Templates response", templates);
+          
+
+          templates.sort((a, b) => {
+              // Convert to lowercase to ensure case-insensitive sorting
+              const nameA = a.name.toLowerCase();
+              const nameB = b.name.toLowerCase();
+
+              if (nameA < nameB) {
+                  return -1; // a comes first
+              }
+              if (nameA > nameB) {
+                  return 1; // b comes first
+              }
+              return 0; // names are equal
+          });
+
           console.log("templates", templates);
           selectEl.innerHTML = '<option value="">Select Form Template</option>';
           templates.forEach(tpl => {
@@ -1704,7 +1721,8 @@
 
         const args = {
           leadId,
-          emailTemplateId: selectEl.value
+          emailTemplateId: selectEl.value,
+          generateLink: mode === "generate"
         };
 
         if (formPayload) {
